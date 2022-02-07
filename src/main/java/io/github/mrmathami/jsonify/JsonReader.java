@@ -32,7 +32,7 @@ public class JsonReader implements Closeable {
 	/**
 	 * The input reader.
 	 */
-	private @Nullable Reader reader;
+	private final @NotNull Reader reader;
 
 	/**
 	 * Creates a json reader.
@@ -52,7 +52,7 @@ public class JsonReader implements Closeable {
 	 * Undo reading a codepoint.
 	 */
 	private void undo(int undo) {
-		assert undo < 0;
+		// assert undo < 0;
 		this.undo = undo;
 	}
 
@@ -60,9 +60,6 @@ public class JsonReader implements Closeable {
 	 * Get next codepoint.
 	 */
 	private int read() throws IOException {
-		// already checked
-		assert reader != null;
-
 		final int undo = this.undo;
 		if (undo >= 0) {
 			this.undo = -1;
@@ -105,7 +102,7 @@ public class JsonReader implements Closeable {
 	 * Checks to make sure that the stream has not been closed
 	 */
 	private void ensureOpen() throws IOException {
-		if (reader == null) throw new IOException("Already closed!");
+		if (state == STATE_CLOSED) throw new IOException("Already closed!");
 	}
 
 	/**
@@ -113,13 +110,10 @@ public class JsonReader implements Closeable {
 	 */
 	@Override
 	public void close() throws IOException {
-		if (reader != null) {
+		if (state != STATE_CLOSED) {
 			reader.close();
-			this.reader = null;
-
-			assert lastStructures != null;
 			lastStructures.clear();
-			this.lastStructures = null;
+			this.state = STATE_CLOSED;
 		}
 	}
 
@@ -130,13 +124,18 @@ public class JsonReader implements Closeable {
 	 * indicates the parser is currently inside an object. A bit with value 1 indicates the parser is currently inside
 	 * an array.
 	 */
-	private @Nullable BitSet lastStructures = new BitSet();
+	private final @NotNull BitSet lastStructures = new BitSet();
 
 	/**
 	 * Last index of last states array. An index smaller than 0 indicates the parser is at the top level, any other
 	 * value indicate the parser is inside an object or an array.
 	 */
 	private int lastStructureIndex = -1;
+
+	/**
+	 * This state indicates that the parser is closed.
+	 */
+	private static final int STATE_CLOSED = -1;
 
 	/**
 	 * This state indicates that the parser expect the next token is a Name.
@@ -156,28 +155,26 @@ public class JsonReader implements Closeable {
 	/**
 	 * This state indicates that the parser expect the next token is an EOF.
 	 */
-	private static final int STATE_DOCUMENT_END = 3;
+	private static final int STATE_EXPECT_DOCUMENT_END = 3;
 
 	/**
 	 * Current state of the parser's state machine.
 	 */
 	private int state = STATE_EXPECT_VALUE;
 
-	private @NotNull JsonParsingException unexpected() {
-		return new JsonParsingException("Unexpected character when parsing input JSON!");
-	}
-
 	/**
 	 * Parse next token. Throws JsonParsingException if there is an error while parsing input JSON.
 	 */
 	public @NotNull JsonToken nextToken() throws IOException, JsonParsingException {
 		ensureOpen();
-		assert lastStructures != null;
 		return switch (state) {
 			case STATE_EXPECT_NAME -> {
 				final JsonToken name = name();
 				// NOTE: the separator ':' are already consumed
-				this.state = STATE_EXPECT_VALUE;
+				switch (name) {
+					case OBJECT_END -> this.state = STATE_ARRAY_OBJECT_END;
+					case NAME -> this.state = STATE_EXPECT_VALUE;
+				}
 				yield name;
 			}
 			case STATE_EXPECT_VALUE -> {
@@ -195,30 +192,9 @@ public class JsonReader implements Closeable {
 						this.state = STATE_EXPECT_VALUE;
 						lastStructures.set(++lastStructureIndex);
 					}
-					case STRING, NUMBER, TRUE, FALSE, NULL -> {
-						if (lastStructureIndex >= 0) {
-							// the parser is inside an object or an array
-							final int c = readNonWhitespace();
-							if (c == ',') {
-								// not end of object/array yet
-								this.state = lastStructures.get(lastStructureIndex)
-										? STATE_EXPECT_VALUE // array
-										: STATE_EXPECT_NAME; // object
-							} else if (c == ']' || c == '}') {
-								// end of object/array. Checking the closing character for sure
-								if (lastStructures.get(lastStructureIndex) == (c == ']')) {
-									this.state = STATE_ARRAY_OBJECT_END;
-								} else {
-									throw unexpected();
-								}
-							} else {
-								throw unexpected();
-							}
-						} else {
-							// the parser is at the top level, expect an EOF
-							this.state = STATE_DOCUMENT_END;
-						}
-					}
+					case ARRAY_END -> this.state = STATE_ARRAY_OBJECT_END;
+					case STRING, NUMBER, TRUE, FALSE, NULL -> consumeSeparator();
+					case EOF -> throw new JsonParsingException("Empty JSON document is invalid!");
 					default -> throw new AssertionError();
 				}
 				yield value;
@@ -227,36 +203,42 @@ public class JsonReader implements Closeable {
 					? JsonToken.ARRAY_END // array
 					: JsonToken.OBJECT_END; // object
 
-			case STATE_DOCUMENT_END -> {
+			case STATE_EXPECT_DOCUMENT_END -> {
 				final int c = readNonWhitespace();
 				if (c < 0) yield JsonToken.EOF;
 				undo(c);
-				throw unexpected();
+				throw new JsonParsingException("Unexpected character at the end of the document!");
 			}
 			default -> throw new AssertionError();
 		};
 	}
 
 	/**
-	 * Pop out of an Array or an Object. Require the parser to be at the end of said structure.
+	 * Consume structure separator after a value and set state accordingly. This includes comma, array close bracket and
+	 * object close bracket.
 	 */
-	private void popStructure() {
-		assert state == STATE_ARRAY_OBJECT_END;
-		assert lastStructureIndex >= 0;
-		assert lastStructures != null;
-
-		// pop structure stack
-		this.lastStructureIndex -= 1;
-		//lastStructures.clear(lastStructureIndex--);
-
+	private void consumeSeparator() throws IOException, JsonParsingException {
 		if (lastStructureIndex >= 0) {
-			// the parser is still inside an object or an array
-			this.state = lastStructures.get(lastStructureIndex)
-					? STATE_EXPECT_VALUE // array
-					: STATE_EXPECT_NAME; // object
+			// the parser is inside an object or an array
+			final int c = readNonWhitespace();
+			if (c == ',') {
+				// not end of object/array yet
+				this.state = lastStructures.get(lastStructureIndex)
+						? STATE_EXPECT_VALUE // array
+						: STATE_EXPECT_NAME; // object
+			} else if (c == ']' || c == '}') {
+				// end of object/array. Checking the closing character for sure
+				if (lastStructures.get(lastStructureIndex) == (c == ']')) {
+					this.state = STATE_ARRAY_OBJECT_END;
+				} else {
+					throw new JsonParsingException("Invalid closing character for current structure!");
+				}
+			} else {
+				throw new JsonParsingException("Unexpected character after a value!");
+			}
 		} else {
 			// the parser is at the top level, expect an EOF
-			this.state = STATE_DOCUMENT_END;
+			this.state = STATE_EXPECT_DOCUMENT_END;
 		}
 	}
 
@@ -267,7 +249,9 @@ public class JsonReader implements Closeable {
 		ensureOpen();
 		if (state == STATE_ARRAY_OBJECT_END) {
 			// at the end of a structure
-			popStructure();
+			// pop structure stack
+			this.lastStructureIndex -= 1;
+			consumeSeparator();
 		} else if (lastStructureIndex >= 0) {
 			// in the middle of a structure, so skip everything until the end
 			final int currentStructureIndex = this.lastStructureIndex;
@@ -276,7 +260,9 @@ public class JsonReader implements Closeable {
 					final JsonToken token = nextToken();
 					if (token == JsonToken.OBJECT_END || token == JsonToken.ARRAY_END) break;
 				}
-				popStructure();
+				// pop structure stack
+				this.lastStructureIndex -= 1;
+				consumeSeparator();
 			}
 		} else {
 			throw new IllegalStateException("Not in a structure!");
@@ -315,14 +301,17 @@ public class JsonReader implements Closeable {
 	 * Consume a Name token and the separator token.
 	 */
 	private @NotNull JsonToken name() throws IOException, JsonParsingException {
-		if (readNonWhitespace() == '\"') {
+		final int c = readNonWhitespace();
+		if (c == '\"') {
 			this.value = string();
 			this.number = false;
 			if (readNonWhitespace() == ':') {
 				return JsonToken.NAME;
 			}
+		} else if (c == '}') {
+			return JsonToken.OBJECT_END;
 		}
-		throw unexpected();
+		throw new JsonParsingException("Unexpected character when parsing input JSON!");
 	}
 
 	/**
@@ -334,6 +323,7 @@ public class JsonReader implements Closeable {
 		return switch (c) {
 			case -1 -> JsonToken.EOF;
 			case '[' -> JsonToken.ARRAY_BEGIN;
+			case ']' -> JsonToken.ARRAY_END;
 			case '{' -> JsonToken.OBJECT_BEGIN;
 			case '\"' -> {
 				this.value = string();
@@ -349,21 +339,21 @@ public class JsonReader implements Closeable {
 				if (read() == 'r' && read() == 'u' && read() == 'e') {
 					yield JsonToken.TRUE;
 				}
-				throw unexpected();
+				throw new JsonParsingException("Unexpected character when parsing input JSON!");
 			}
 			case 'f' -> {
 				if (read() == 'a' && read() == 'l' && read() == 's' && read() == 'e') {
 					yield JsonToken.FALSE;
 				}
-				throw unexpected();
+				throw new JsonParsingException("Unexpected character when parsing input JSON!");
 			}
 			case 'n' -> {
 				if (read() == 'u' && read() == 'l' && read() == 'l') {
 					yield JsonToken.NULL;
 				}
-				throw unexpected();
+				throw new JsonParsingException("Unexpected character when parsing input JSON!");
 			}
-			default -> throw unexpected();
+			default -> throw new JsonParsingException("Unexpected character when parsing input JSON!");
 		};
 	}
 
