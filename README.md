@@ -3,11 +3,10 @@
 JSON reader/writer library. Currently, it is in ALPHA stage.
 
 ## Goal
-
-1. Be able to read/write JSON.
-2. Be simple to maintain/develop.
-3. Be simple to use.
-4. Be really fast.
+- Be able to read/write JSON.
+- Be simple to maintain/develop. 
+- Be simple to use.
+- Be really fast.
 
 ## Non-goal
 - Be a serializer/deserializer library. If you need one, look for [Jackson](https://github.com/FasterXML/jackson), [Gson](https://github.com/google/gson) or something else.
