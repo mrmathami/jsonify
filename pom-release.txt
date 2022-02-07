@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>io.github.mrmathami</groupId>
+	<artifactId>jsonify</artifactId>
+	<version>1.0.0</version>
+	<packaging>jar</packaging>
+
+	<name>jsonify</name>
+	<description>JSON reader/writer library.</description>
+	<url>https://github.com/mrmathami/jsonify</url>
+
+	<licenses>
+		<license>
+			<name>LGPL-3.0-or-later</name>
+			<url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>thanhminhmr</id>
+			<name>Mai Thanh Minh</name>
+			<email>thanhminh.mr@gmail.com</email>
+			<url>https://github.com/thanhminhmr</url>
+		</developer>
+	</developers>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.jetbrains</groupId>
+			<artifactId>annotations</artifactId>
+			<version>23.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+</project>
