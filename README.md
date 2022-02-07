@@ -19,7 +19,7 @@ JSON reader/writer library. Currently, it is in ALPHA stage.
 - [ ] Can write that data structure back to JSON output.
 
 ## License
-LGPL v2.1
+LGPL v3 or any later version
 
 ## Found a bug?
 Feel free to open an issue.
