@@ -76,4 +76,16 @@ public final class LazyNumber extends Number {
 	public @NotNull String toString() {
 		return number;
 	}
+
+	@Override
+	public boolean equals(@Nullable Object object) {
+		return this == object
+				|| object instanceof LazyNumber lazyNumber && number.equals(lazyNumber.number)
+				|| object instanceof Number normalNumber && number.equals(normalNumber.toString());
+	}
+
+	@Override
+	public int hashCode() {
+		return number.hashCode();
+	}
 }
