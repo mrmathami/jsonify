@@ -33,6 +33,50 @@ public final class JsonPrimitive implements JsonElement {
 		this.value = value;
 	}
 
+	public static @NotNull JsonPrimitive of(boolean value) {
+		return value ? TRUE : FALSE;
+	}
+
+	public static @NotNull JsonPrimitive of(byte value) {
+		return of(Byte.valueOf(value));
+	}
+
+	public static @NotNull JsonPrimitive of(short value) {
+		return of(Short.valueOf(value));
+	}
+
+	public static @NotNull JsonPrimitive of(int value) {
+		return of(Integer.valueOf(value));
+	}
+
+	public static @NotNull JsonPrimitive of(long value) {
+		return of(Long.valueOf(value));
+	}
+
+	public static @NotNull JsonPrimitive of(float value) {
+		return of(Float.valueOf(value));
+	}
+
+	public static @NotNull JsonPrimitive of(double value) {
+		return of(Double.valueOf(value));
+	}
+
+	public static @NotNull JsonPrimitive of(char value) {
+		return of(String.valueOf(value));
+	}
+
+	public static @NotNull JsonPrimitive of(@NotNull Boolean value) {
+		return new JsonPrimitive(value);
+	}
+
+	public static @NotNull JsonPrimitive of(@NotNull Number value) {
+		return new JsonPrimitive(value);
+	}
+
+	public static @NotNull JsonPrimitive of(@NotNull String value) {
+		return new JsonPrimitive(value);
+	}
+
 	public static @NotNull JsonPrimitive of(@Nullable Object value) {
 		if (value == null) return NULL;
 		if (value instanceof Boolean bool) return bool ? TRUE : FALSE;
