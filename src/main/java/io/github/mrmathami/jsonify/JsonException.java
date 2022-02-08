@@ -22,12 +22,12 @@ import org.jetbrains.annotations.NotNull;
 /**
  * jsonify custom exception.
  */
-public final class JsonParsingException extends Exception {
-	public JsonParsingException(@NotNull String message) {
+public final class JsonException extends Exception {
+	public JsonException(@NotNull String message) {
 		super(message);
 	}
 
-	public JsonParsingException(@NotNull String message, @NotNull Throwable cause) {
+	public JsonException(@NotNull String message, @NotNull Throwable cause) {
 		super(message, cause);
 	}
 }

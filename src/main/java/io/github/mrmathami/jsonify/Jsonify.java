@@ -27,7 +27,7 @@ public final class Jsonify {
 	}
 
 	public static @NotNull JsonElement load(@NotNull Reader inputReader)
-			throws IOException, JsonParsingException {
+			throws IOException, JsonException {
 		try (final JsonReader reader = new JsonReader(inputReader)) {
 			final JsonElement value = getValue(reader, reader.nextToken());
 			if (reader.nextToken() != JsonToken.EOF) throw new AssertionError();
@@ -36,7 +36,7 @@ public final class Jsonify {
 	}
 
 	private static @NotNull JsonElement getValue(@NotNull JsonReader reader, @NotNull JsonToken token)
-			throws IOException, JsonParsingException {
+			throws IOException, JsonException {
 		return switch (token) {
 			case ARRAY_BEGIN -> loadArray(reader);
 			case OBJECT_BEGIN -> loadObject(reader);
@@ -50,7 +50,7 @@ public final class Jsonify {
 	}
 
 	private static @NotNull JsonElement loadArray(@NotNull JsonReader reader)
-			throws IOException, JsonParsingException {
+			throws IOException, JsonException {
 		// already in array
 		final JsonArray array = new JsonArray();
 		while (true) {
@@ -65,7 +65,7 @@ public final class Jsonify {
 	}
 
 	private static @NotNull JsonElement loadObject(@NotNull JsonReader reader)
-			throws IOException, JsonParsingException {
+			throws IOException, JsonException {
 		// already in object
 		final JsonObject object = new JsonObject();
 		while (true) {

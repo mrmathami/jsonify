@@ -165,7 +165,7 @@ public class JsonReader implements Closeable {
 	/**
 	 * Parse next token. Throws JsonParsingException if there is an error while parsing input JSON.
 	 */
-	public @NotNull JsonToken nextToken() throws IOException, JsonParsingException {
+	public @NotNull JsonToken nextToken() throws IOException, JsonException {
 		ensureOpen();
 		return switch (state) {
 			case STATE_EXPECT_NAME -> {
@@ -194,7 +194,7 @@ public class JsonReader implements Closeable {
 					}
 					case ARRAY_END -> this.state = STATE_ARRAY_OBJECT_END;
 					case STRING, NUMBER, TRUE, FALSE, NULL -> consumeSeparator();
-					case EOF -> throw new JsonParsingException("Empty JSON document is invalid!");
+					case EOF -> throw new JsonException("Empty JSON document is invalid!");
 					default -> throw new AssertionError();
 				}
 				yield value;
@@ -207,7 +207,7 @@ public class JsonReader implements Closeable {
 				final int c = readNonWhitespace();
 				if (c < 0) yield JsonToken.EOF;
 				undo(c);
-				throw new JsonParsingException("Unexpected character at the end of the document!");
+				throw new JsonException("Unexpected character at the end of the document!");
 			}
 			default -> throw new AssertionError();
 		};
@@ -217,7 +217,7 @@ public class JsonReader implements Closeable {
 	 * Consume structure separator after a value and set state accordingly. This includes comma, array close bracket and
 	 * object close bracket.
 	 */
-	private void consumeSeparator() throws IOException, JsonParsingException {
+	private void consumeSeparator() throws IOException, JsonException {
 		if (lastStructureIndex >= 0) {
 			// the parser is inside an object or an array
 			final int c = readNonWhitespace();
@@ -231,10 +231,10 @@ public class JsonReader implements Closeable {
 				if (lastStructures.get(lastStructureIndex) == (c == ']')) {
 					this.state = STATE_ARRAY_OBJECT_END;
 				} else {
-					throw new JsonParsingException("Invalid closing character for current structure!");
+					throw new JsonException("Invalid closing character for current structure!");
 				}
 			} else {
-				throw new JsonParsingException("Unexpected character after a value!");
+				throw new JsonException("Unexpected character after a value!");
 			}
 		} else {
 			// the parser is at the top level, expect an EOF
@@ -245,7 +245,7 @@ public class JsonReader implements Closeable {
 	/**
 	 * Skip over the end of an Array or an Object.
 	 */
-	public void endStructure() throws IOException, JsonParsingException {
+	public void endStructure() throws IOException, JsonException {
 		ensureOpen();
 		if (state == STATE_ARRAY_OBJECT_END) {
 			// at the end of a structure
@@ -300,7 +300,7 @@ public class JsonReader implements Closeable {
 	/**
 	 * Consume a Name token and the separator token.
 	 */
-	private @NotNull JsonToken name() throws IOException, JsonParsingException {
+	private @NotNull JsonToken name() throws IOException, JsonException {
 		final int c = readNonWhitespace();
 		if (c == '\"') {
 			this.value = string();
@@ -311,13 +311,13 @@ public class JsonReader implements Closeable {
 		} else if (c == '}') {
 			return JsonToken.OBJECT_END;
 		}
-		throw new JsonParsingException("Unexpected character when parsing input JSON!");
+		throw new JsonException("Unexpected character when parsing input JSON!");
 	}
 
 	/**
 	 * Consume the Value token but DOES NOT consume the separator token.
 	 */
-	private @NotNull JsonToken value() throws IOException, JsonParsingException {
+	private @NotNull JsonToken value() throws IOException, JsonException {
 		this.value = null;
 		final int c = readNonWhitespace();
 		return switch (c) {
@@ -339,28 +339,28 @@ public class JsonReader implements Closeable {
 				if (read() == 'r' && read() == 'u' && read() == 'e') {
 					yield JsonToken.TRUE;
 				}
-				throw new JsonParsingException("Unexpected character when parsing input JSON!");
+				throw new JsonException("Unexpected character when parsing input JSON!");
 			}
 			case 'f' -> {
 				if (read() == 'a' && read() == 'l' && read() == 's' && read() == 'e') {
 					yield JsonToken.FALSE;
 				}
-				throw new JsonParsingException("Unexpected character when parsing input JSON!");
+				throw new JsonException("Unexpected character when parsing input JSON!");
 			}
 			case 'n' -> {
 				if (read() == 'u' && read() == 'l' && read() == 'l') {
 					yield JsonToken.NULL;
 				}
-				throw new JsonParsingException("Unexpected character when parsing input JSON!");
+				throw new JsonException("Unexpected character when parsing input JSON!");
 			}
-			default -> throw new JsonParsingException("Unexpected character when parsing input JSON!");
+			default -> throw new JsonException("Unexpected character when parsing input JSON!");
 		};
 	}
 
 	/**
 	 * Consume a Number token and set the number value accordingly.
 	 */
-	private @NotNull String number(int startCp) throws IOException, JsonParsingException {
+	private @NotNull String number(int startCp) throws IOException, JsonException {
 		final StringBuilder builder = new StringBuilder();
 		// first part: the integer
 		int c = startCp;
@@ -380,7 +380,7 @@ public class JsonReader implements Closeable {
 				c = read();
 			} while (c >= '0' && c <= '9');
 		} else {
-			throw new JsonParsingException("Invalid character in integer part of number!");
+			throw new JsonException("Invalid character in integer part of number!");
 		}
 		// second part: fraction
 		if (c == '.') {
@@ -395,7 +395,7 @@ public class JsonReader implements Closeable {
 					c = read();
 				} while (c >= '0' && c <= '9');
 			} else {
-				throw new JsonParsingException("Invalid character in fraction part of number!");
+				throw new JsonException("Invalid character in fraction part of number!");
 			}
 		}
 		// third part: exponent
@@ -416,7 +416,7 @@ public class JsonReader implements Closeable {
 					c = read();
 				} while (c >= '0' && c <= '9');
 			} else {
-				throw new JsonParsingException("Invalid character in exponent part of number!");
+				throw new JsonException("Invalid character in exponent part of number!");
 			}
 		}
 		undo(c);
@@ -426,7 +426,7 @@ public class JsonReader implements Closeable {
 	/**
 	 * Consume a String token and set the string value accordingly.
 	 */
-	private @NotNull String string() throws IOException, JsonParsingException {
+	private @NotNull String string() throws IOException, JsonException {
 		// the open quote are already consumed
 		final StringBuilder builder = new StringBuilder();
 		while (true) {
@@ -447,7 +447,7 @@ public class JsonReader implements Closeable {
 								case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> e - '0';
 								case 'A', 'B', 'C', 'D', 'E', 'F' -> e - 'A' + 10;
 								case 'a', 'b', 'c', 'd', 'e', 'f' -> e - 'a' + 10;
-								default -> throw new JsonParsingException("Invalid escape sequence in string!");
+								default -> throw new JsonException("Invalid escape sequence in string!");
 							};
 						} while (result < 0x10000);
 						yield result - 0x10000;
@@ -458,12 +458,12 @@ public class JsonReader implements Closeable {
 					case 'r' -> '\r';
 					case 'f' -> '\f';
 					case '"', '\\', '/' -> d;
-					default -> throw new JsonParsingException("Invalid escape sequence in string!");
+					default -> throw new JsonException("Invalid escape sequence in string!");
 				});
 			} else if (c == '"') {
 				return builder.toString();
 			} else {
-				throw new JsonParsingException("Invalid character in string!");
+				throw new JsonException("Invalid character in string!");
 			}
 		}
 	}
