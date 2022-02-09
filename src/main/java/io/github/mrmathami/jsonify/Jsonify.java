@@ -26,20 +26,26 @@ public final class Jsonify {
 	private Jsonify() {
 	}
 
+	/**
+	 * Load input json to JSON element.
+	 */
 	public static @NotNull JsonElement load(@NotNull Reader inputReader)
 			throws IOException, JsonException {
 		try (final JsonReader reader = new JsonReader(inputReader)) {
-			final JsonElement value = getValue(reader, reader.nextToken());
+			final JsonElement value = nextValue(reader, reader.nextToken());
 			if (reader.nextToken() != JsonToken.EOF) throw new AssertionError();
 			return value;
 		}
 	}
 
-	private static @NotNull JsonElement getValue(@NotNull JsonReader reader, @NotNull JsonToken token)
+	/**
+	 * Get next value from input JSON.
+	 */
+	private static @NotNull JsonElement nextValue(@NotNull JsonReader reader, @NotNull JsonToken token)
 			throws IOException, JsonException {
 		return switch (token) {
-			case ARRAY_BEGIN -> loadArray(reader);
-			case OBJECT_BEGIN -> loadObject(reader);
+			case ARRAY_BEGIN -> getArray(reader);
+			case OBJECT_BEGIN -> getObject(reader);
 			case STRING -> JsonPrimitive.of(reader.getString());
 			case NUMBER -> JsonPrimitive.of(reader.getNumber());
 			case TRUE -> JsonPrimitive.TRUE;
@@ -49,14 +55,17 @@ public final class Jsonify {
 		};
 	}
 
-	private static @NotNull JsonElement loadArray(@NotNull JsonReader reader)
+	/**
+	 * Get array from input JSON.
+	 */
+	private static @NotNull JsonArray getArray(@NotNull JsonReader reader)
 			throws IOException, JsonException {
-		// already in array
+		// already inside array
 		final JsonArray array = new JsonArray();
 		while (true) {
 			final JsonToken value = reader.nextToken();
 			if (value != JsonToken.ARRAY_END) {
-				array.add(getValue(reader, value));
+				array.add(nextValue(reader, value));
 			} else {
 				reader.endStructure();
 				return array;
@@ -64,14 +73,17 @@ public final class Jsonify {
 		}
 	}
 
-	private static @NotNull JsonElement loadObject(@NotNull JsonReader reader)
+	/**
+	 * Get object from input JSON.
+	 */
+	private static @NotNull JsonObject getObject(@NotNull JsonReader reader)
 			throws IOException, JsonException {
-		// already in object
+		// already inside object
 		final JsonObject object = new JsonObject();
 		while (true) {
 			JsonToken jsonToken = reader.nextToken();
 			if (jsonToken == JsonToken.NAME) {
-				object.put(reader.getString(), getValue(reader, reader.nextToken()));
+				object.put(reader.getString(), nextValue(reader, reader.nextToken()));
 			} else if (jsonToken == JsonToken.OBJECT_END) {
 				reader.endStructure();
 				return object;
