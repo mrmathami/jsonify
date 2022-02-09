@@ -27,65 +27,55 @@ import java.math.BigInteger;
  * Lazy parsed number.
  */
 public final class LazyNumber extends Number {
-	private final @NotNull String number;
+	private final @NotNull String numberString;
 	private @Nullable BigDecimal decimal;
 
-	public LazyNumber(@NotNull String number) {
-		this.number = number;
+	public LazyNumber(@NotNull String numberString) {
+		this.numberString = numberString;
 	}
 
 	@Override
 	public int intValue() {
-		if (decimal == null) parse();
-		return decimal.intValue();
+		return asBigDecimal().intValue();
 	}
 
 	@Override
 	public long longValue() {
-		if (decimal == null) parse();
-		return decimal.longValue();
+		return asBigDecimal().longValue();
 	}
 
 	@Override
 	public float floatValue() {
-		if (decimal == null) parse();
-		return decimal.floatValue();
+		return asBigDecimal().floatValue();
 	}
 
 	@Override
 	public double doubleValue() {
-		if (decimal == null) parse();
-		return decimal.doubleValue();
+		return asBigDecimal().doubleValue();
 	}
 
 	public @NotNull BigInteger asBigInteger() {
-		if (decimal == null) parse();
-		return decimal.toBigInteger();
+		return asBigDecimal().toBigInteger();
 	}
 
 	public @NotNull BigDecimal asBigDecimal() {
-		if (decimal == null) parse();
-		return decimal;
-	}
-
-	private void parse() {
-		this.decimal = new BigDecimal(number);
+		return decimal != null ? decimal : (this.decimal = new BigDecimal(numberString));
 	}
 
 	@Override
 	public @NotNull String toString() {
-		return number;
+		return asBigDecimal().toString();
 	}
 
 	@Override
 	public boolean equals(@Nullable Object object) {
 		return this == object
-				|| object instanceof LazyNumber lazyNumber && number.equals(lazyNumber.number)
-				|| object instanceof Number normalNumber && number.equals(normalNumber.toString());
+				|| object instanceof LazyNumber lazyNumber && asBigDecimal().equals(lazyNumber.asBigDecimal())
+				|| object instanceof Number normalNumber && asBigDecimal().toString().equals(normalNumber.toString());
 	}
 
 	@Override
 	public int hashCode() {
-		return number.hashCode();
+		return asBigDecimal().hashCode();
 	}
 }
