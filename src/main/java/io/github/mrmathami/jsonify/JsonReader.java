@@ -143,19 +143,36 @@ public class JsonReader implements Closeable {
 	private static final int STATE_EXPECT_NAME = 0;
 
 	/**
-	 * This state indicates that the parser expect the next token is a Value.
+	 * This state indicates that the parser expect the next token is a Name or an ObjectEnd.
 	 */
-	private static final int STATE_EXPECT_VALUE = 1;
+	private static final int STATE_EXPECT_NAME_OR_OBJECT_END = 1;
 
 	/**
-	 * This state indicates that the parser expect the next token is an ArrayEnd or an ObjectEnd.
+	 * This state indicates that the parser expect the next token is a Value.
 	 */
-	private static final int STATE_ARRAY_OBJECT_END = 2;
+	private static final int STATE_EXPECT_VALUE = 2;
+
+	/**
+	 * This state indicates that the parser expect the next token is a Value or an ArrayEnd.
+	 */
+	private static final int STATE_EXPECT_VALUE_OR_ARRAY_END = 3;
+
+	/**
+	 * This state indicates that the parser is already pass over an ArrayEnd token and now waiting to receive a
+	 * endStructure call.
+	 */
+	private static final int STATE_ARRAY_END = 4;
+
+	/**
+	 * This state indicates that the parser is already pass over an ObjectEnd token and now waiting to receive a
+	 * endStructure call.
+	 */
+	private static final int STATE_OBJECT_END = 5;
 
 	/**
 	 * This state indicates that the parser expect the next token is an EOF.
 	 */
-	private static final int STATE_EXPECT_DOCUMENT_END = 3;
+	private static final int STATE_EXPECT_DOCUMENT_END = 6;
 
 	/**
 	 * Current state of the parser's state machine.
@@ -168,41 +185,52 @@ public class JsonReader implements Closeable {
 	public @NotNull JsonToken nextToken() throws IOException, JsonException {
 		ensureOpen();
 		return switch (state) {
-			case STATE_EXPECT_NAME -> {
+			case STATE_EXPECT_NAME, STATE_EXPECT_NAME_OR_OBJECT_END -> {
 				final JsonToken name = name();
 				// NOTE: the separator ':' are already consumed
 				switch (name) {
-					case OBJECT_END -> this.state = STATE_ARRAY_OBJECT_END;
 					case NAME -> this.state = STATE_EXPECT_VALUE;
+					case OBJECT_END -> {
+						if (state == STATE_EXPECT_NAME_OR_OBJECT_END) {
+							this.state = STATE_OBJECT_END;
+						} else {
+							throw new JsonException("Unexpected closing character!");
+						}
+					}
+					default -> throw new AssertionError();
 				}
 				yield name;
 			}
-			case STATE_EXPECT_VALUE -> {
+			case STATE_EXPECT_VALUE, STATE_EXPECT_VALUE_OR_ARRAY_END -> {
 				final JsonToken value = value();
 				switch (value) {
 					case OBJECT_BEGIN -> {
 						// push Object to the structure stack
 						// set next expected token to be a Name
-						this.state = STATE_EXPECT_NAME;
+						this.state = STATE_EXPECT_NAME_OR_OBJECT_END;
 						lastStructures.clear(++lastStructureIndex);
 					}
 					case ARRAY_BEGIN -> {
 						// push Array to the structure stack
 						// set next expected token to be a Value
-						this.state = STATE_EXPECT_VALUE;
+						this.state = STATE_EXPECT_VALUE_OR_ARRAY_END;
 						lastStructures.set(++lastStructureIndex);
 					}
-					case ARRAY_END -> this.state = STATE_ARRAY_OBJECT_END;
+					case ARRAY_END -> {
+						if (state == STATE_EXPECT_VALUE_OR_ARRAY_END && lastStructureIndex >= 0) {
+							this.state = STATE_ARRAY_END;
+						} else {
+							throw new JsonException("Unexpected closing character!");
+						}
+					}
 					case STRING, NUMBER, TRUE, FALSE, NULL -> consumeSeparator();
 					case EOF -> throw new JsonException("Empty JSON document is invalid!");
 					default -> throw new AssertionError();
 				}
 				yield value;
 			}
-			case STATE_ARRAY_OBJECT_END -> lastStructures.get(lastStructureIndex)
-					? JsonToken.ARRAY_END // array
-					: JsonToken.OBJECT_END; // object
-
+			case STATE_ARRAY_END -> JsonToken.ARRAY_END;
+			case STATE_OBJECT_END -> JsonToken.OBJECT_END;
 			case STATE_EXPECT_DOCUMENT_END -> {
 				final int c = readNonWhitespace();
 				if (c < 0) yield JsonToken.EOF;
@@ -221,20 +249,30 @@ public class JsonReader implements Closeable {
 		if (lastStructureIndex >= 0) {
 			// the parser is inside an object or an array
 			final int c = readNonWhitespace();
-			if (c == ',') {
-				// not end of object/array yet
-				this.state = lastStructures.get(lastStructureIndex)
-						? STATE_EXPECT_VALUE // array
-						: STATE_EXPECT_NAME; // object
-			} else if (c == ']' || c == '}') {
-				// end of object/array. Checking the closing character for sure
-				if (lastStructures.get(lastStructureIndex) == (c == ']')) {
-					this.state = STATE_ARRAY_OBJECT_END;
-				} else {
-					throw new JsonException("Invalid closing character for current structure!");
+			switch (c) {
+				case ',' -> {
+					// not end of object/array yet
+					this.state = lastStructures.get(lastStructureIndex)
+							? STATE_EXPECT_VALUE // array
+							: STATE_EXPECT_NAME; // object
 				}
-			} else {
-				throw new JsonException("Unexpected character after a value!");
+				case ']' -> {
+					// end of array. Checking the closing character...
+					if (lastStructures.get(lastStructureIndex)) {
+						this.state = STATE_ARRAY_END;
+					} else {
+						throw new JsonException("Invalid closing character for object!");
+					}
+				}
+				case '}' -> {
+					// end of object. Checking the closing character...
+					if (!lastStructures.get(lastStructureIndex)) {
+						this.state = STATE_OBJECT_END;
+					} else {
+						throw new JsonException("Invalid closing character for array!");
+					}
+				}
+				default -> throw new JsonException("Unexpected character after a value!");
 			}
 		} else {
 			// the parser is at the top level, expect an EOF
@@ -247,7 +285,7 @@ public class JsonReader implements Closeable {
 	 */
 	public void endStructure() throws IOException, JsonException {
 		ensureOpen();
-		if (state == STATE_ARRAY_OBJECT_END) {
+		if (state == STATE_ARRAY_END || state == STATE_OBJECT_END) {
 			// at the end of a structure
 			// pop structure stack
 			this.lastStructureIndex -= 1;
@@ -258,7 +296,7 @@ public class JsonReader implements Closeable {
 			while (currentStructureIndex <= lastStructureIndex) {
 				while (true) {
 					final JsonToken token = nextToken();
-					if (token == JsonToken.OBJECT_END || token == JsonToken.ARRAY_END) break;
+					if (token == JsonToken.ARRAY_END || token == JsonToken.OBJECT_END) break;
 				}
 				// pop structure stack
 				this.lastStructureIndex -= 1;
@@ -320,41 +358,45 @@ public class JsonReader implements Closeable {
 	private @NotNull JsonToken value() throws IOException, JsonException {
 		this.value = null;
 		final int c = readNonWhitespace();
-		return switch (c) {
-			case -1 -> JsonToken.EOF;
-			case '[' -> JsonToken.ARRAY_BEGIN;
-			case ']' -> JsonToken.ARRAY_END;
-			case '{' -> JsonToken.OBJECT_BEGIN;
-			case '\"' -> {
+		switch (c) {
+			case -1:
+				return JsonToken.EOF;
+			case '[':
+				return JsonToken.ARRAY_BEGIN;
+			case ']':
+				return JsonToken.ARRAY_END;
+			case '{':
+				return JsonToken.OBJECT_BEGIN;
+
+			case '\"':
 				this.value = string();
 				this.number = false;
-				yield JsonToken.STRING;
-			}
-			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-' -> {
+				return JsonToken.STRING;
+
+			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-':
 				this.value = number(c);
 				this.number = true;
-				yield JsonToken.NUMBER;
-			}
-			case 't' -> {
+				return JsonToken.NUMBER;
+
+			case 't':
 				if (read() == 'r' && read() == 'u' && read() == 'e') {
-					yield JsonToken.TRUE;
+					return JsonToken.TRUE;
 				}
-				throw new JsonException("Unexpected character when parsing input JSON!");
-			}
-			case 'f' -> {
+				break;
+
+			case 'f':
 				if (read() == 'a' && read() == 'l' && read() == 's' && read() == 'e') {
-					yield JsonToken.FALSE;
+					return JsonToken.FALSE;
 				}
-				throw new JsonException("Unexpected character when parsing input JSON!");
-			}
-			case 'n' -> {
+				break;
+
+			case 'n':
 				if (read() == 'u' && read() == 'l' && read() == 'l') {
-					yield JsonToken.NULL;
+					return JsonToken.NULL;
 				}
-				throw new JsonException("Unexpected character when parsing input JSON!");
-			}
-			default -> throw new JsonException("Unexpected character when parsing input JSON!");
-		};
+				break;
+		}
+		throw new JsonException("Unexpected character when parsing input JSON!");
 	}
 
 	/**
