@@ -26,7 +26,7 @@ import java.io.Reader;
 import java.util.BitSet;
 
 /**
- * Json reader.
+ * JSON reader.
  */
 public class JsonReader implements Closeable {
 	/**
@@ -98,6 +98,8 @@ public class JsonReader implements Closeable {
 		}
 	}
 
+	//========================================
+
 	/**
 	 * Checks to make sure that the stream has not been closed
 	 */
@@ -120,62 +122,62 @@ public class JsonReader implements Closeable {
 	//========================================
 
 	/**
-	 * Last states of the parser's state machine. This bit set will be used as a stack of state. A bit with value 0
-	 * indicates the parser is currently inside an object. A bit with value 1 indicates the parser is currently inside
+	 * Last states of the reader's state machine. This bit set will be used as a stack of state. A bit with value 0
+	 * indicates the reader is currently inside an object. A bit with value 1 indicates the reader is currently inside
 	 * an array.
 	 */
 	private final @NotNull BitSet lastStructures = new BitSet();
 
 	/**
-	 * Last index of last states array. An index smaller than 0 indicates the parser is at the top level, any other
-	 * value indicate the parser is inside an object or an array.
+	 * Last index of last states array. An index smaller than 0 indicates the reader is at the top level, any other
+	 * value indicate the reader is inside an object or an array.
 	 */
 	private int lastStructureIndex = -1;
 
 	/**
-	 * This state indicates that the parser is closed.
+	 * This state indicates that the reader is closed.
 	 */
 	private static final int STATE_CLOSED = -1;
 
 	/**
-	 * This state indicates that the parser expect the next token is a Name.
+	 * This state indicates that the reader expects the next token is a Name.
 	 */
 	private static final int STATE_EXPECT_NAME = 0;
 
 	/**
-	 * This state indicates that the parser expect the next token is a Name or an ObjectEnd.
+	 * This state indicates that the reader expects the next token is a Name or an ObjectEnd.
 	 */
 	private static final int STATE_EXPECT_NAME_OR_OBJECT_END = 1;
 
 	/**
-	 * This state indicates that the parser expect the next token is a Value.
+	 * This state indicates that the reader expects the next token is a Value.
 	 */
 	private static final int STATE_EXPECT_VALUE = 2;
 
 	/**
-	 * This state indicates that the parser expect the next token is a Value or an ArrayEnd.
+	 * This state indicates that the reader expects the next token is a Value or an ArrayEnd.
 	 */
 	private static final int STATE_EXPECT_VALUE_OR_ARRAY_END = 3;
 
 	/**
-	 * This state indicates that the parser is already pass over an ArrayEnd token and now waiting to receive a
+	 * This state indicates that the reader is already pass over an ArrayEnd token and now waiting to receive a
 	 * endStructure call.
 	 */
 	private static final int STATE_ARRAY_END = 4;
 
 	/**
-	 * This state indicates that the parser is already pass over an ObjectEnd token and now waiting to receive a
+	 * This state indicates that the reader is already pass over an ObjectEnd token and now waiting to receive a
 	 * endStructure call.
 	 */
 	private static final int STATE_OBJECT_END = 5;
 
 	/**
-	 * This state indicates that the parser expect the next token is an EOF.
+	 * This state indicates that the reader expects the next token is an EOF.
 	 */
 	private static final int STATE_EXPECT_DOCUMENT_END = 6;
 
 	/**
-	 * Current state of the parser's state machine.
+	 * Current state of the reader's state machine.
 	 */
 	private int state = STATE_EXPECT_VALUE;
 
@@ -208,13 +210,13 @@ public class JsonReader implements Closeable {
 						// push Object to the structure stack
 						// set next expected token to be a Name
 						this.state = STATE_EXPECT_NAME_OR_OBJECT_END;
-						lastStructures.clear(++lastStructureIndex);
+						lastStructures.clear(++this.lastStructureIndex);
 					}
 					case ARRAY_BEGIN -> {
 						// push Array to the structure stack
 						// set next expected token to be a Value
 						this.state = STATE_EXPECT_VALUE_OR_ARRAY_END;
-						lastStructures.set(++lastStructureIndex);
+						lastStructures.set(++this.lastStructureIndex);
 					}
 					case ARRAY_END -> {
 						if (state == STATE_EXPECT_VALUE_OR_ARRAY_END && lastStructureIndex >= 0) {
@@ -247,7 +249,7 @@ public class JsonReader implements Closeable {
 	 */
 	private void consumeSeparator() throws IOException, JsonException {
 		if (lastStructureIndex >= 0) {
-			// the parser is inside an object or an array
+			// the reader is inside an object or an array
 			final int c = readNonWhitespace();
 			switch (c) {
 				case ',' -> {
@@ -275,7 +277,7 @@ public class JsonReader implements Closeable {
 				default -> throw new JsonException("Unexpected character after a value!");
 			}
 		} else {
-			// the parser is at the top level, expect an EOF
+			// the reader is at the top level, expect an EOF
 			this.state = STATE_EXPECT_DOCUMENT_END;
 		}
 	}
