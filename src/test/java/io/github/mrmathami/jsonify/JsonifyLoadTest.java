@@ -31,6 +31,8 @@ import java.util.Map;
  * Test jsonify load functionality.
  */
 public class JsonifyLoadTest {
+	private static final String WHITESPACES = " \n\r\t\r\n";
+
 	@Test
 	public void loadArrayEmpty() throws IOException {
 		try {
@@ -134,6 +136,18 @@ public class JsonifyLoadTest {
 	public void loadArrayTriple() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("[null,null,null]"));
+			Assertions.assertEquals(element.getClass(), JsonArray.class);
+			Assertions.assertEquals(element, List.of(JsonPrimitive.NULL, JsonPrimitive.NULL, JsonPrimitive.NULL));
+		} catch (final JsonException e) {
+			Assertions.fail(e);
+		}
+	}
+
+	@Test
+	public void loadArrayWhitespace() throws IOException {
+		try {
+			final String input = String.join(WHITESPACES, "", "[", "null", ",", "null", ",", "null", "]", "");
+			final JsonElement element = Jsonify.load(new StringReader(input));
 			Assertions.assertEquals(element.getClass(), JsonArray.class);
 			Assertions.assertEquals(element, List.of(JsonPrimitive.NULL, JsonPrimitive.NULL, JsonPrimitive.NULL));
 		} catch (final JsonException e) {
@@ -281,6 +295,20 @@ public class JsonifyLoadTest {
 		}
 	}
 
+	@Test
+	public void loadObjectWhitespace() throws IOException {
+		try {
+			final String input = String.join(WHITESPACES,
+					"", "{", "\"\"", ":", "null", ",", "\"2\"", ":", "null", ",", "\"3\"", ":", "null", "}", "");
+			final JsonElement element = Jsonify.load(new StringReader(input));
+			Assertions.assertEquals(element.getClass(), JsonObject.class);
+			Assertions.assertEquals(element, Map.of("", JsonPrimitive.NULL, "2", JsonPrimitive.NULL,
+					"3", JsonPrimitive.NULL));
+		} catch (final JsonException e) {
+			Assertions.fail(e);
+		}
+	}
+
 	// ====================
 
 	@Test
@@ -343,6 +371,23 @@ public class JsonifyLoadTest {
 	// ====================
 
 	@Test
+	public void throwNullExtra() {
+		Assertions.assertThrows(JsonException.class, () -> Jsonify.load(new StringReader("null,")));
+	}
+
+	@Test
+	public void throwTrueExtra() {
+		Assertions.assertThrows(JsonException.class, () -> Jsonify.load(new StringReader("true,")));
+	}
+
+	@Test
+	public void throwFalseExtra() {
+		Assertions.assertThrows(JsonException.class, () -> Jsonify.load(new StringReader("false,")));
+	}
+
+	// ====================
+
+	@Test
 	public void loadStringEmpty() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("\"\""));
@@ -364,6 +409,13 @@ public class JsonifyLoadTest {
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
+	}
+
+	// ====================
+
+	@Test
+	public void throwStringExtra() {
+		Assertions.assertThrows(JsonException.class, () -> Jsonify.load(new StringReader("\"\",")));
 	}
 
 	// ====================
@@ -446,5 +498,12 @@ public class JsonifyLoadTest {
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
+	}
+
+	// ====================
+
+	@Test
+	public void throwNumberExtra() {
+		Assertions.assertThrows(JsonException.class, () -> Jsonify.load(new StringReader("0,")));
 	}
 }
