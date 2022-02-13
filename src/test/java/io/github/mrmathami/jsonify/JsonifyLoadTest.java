@@ -21,9 +21,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -505,5 +509,21 @@ public class JsonifyLoadTest {
 	@Test
 	public void throwNumberExtra() {
 		Assertions.assertThrows(JsonException.class, () -> Jsonify.load(new StringReader("0,")));
+	}
+
+	// ====================
+
+	@Test
+	public void loadBigInput() throws IOException {
+		try (InputStream inputStream = JsonifyLoadTest.class.getResourceAsStream("testdata/large-file.json")) {
+			if (inputStream == null) Assertions.fail("Failed loading test resource!");
+			try (final Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+				final JsonElement element = Jsonify.load(reader);
+				Assertions.assertInstanceOf(JsonArray.class, element);
+				Assertions.assertEquals(((JsonArray) element).size(), 11351);
+			} catch (final JsonException e) {
+				Assertions.fail(e);
+			}
+		}
 	}
 }
