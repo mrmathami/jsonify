@@ -47,9 +47,8 @@ public final class JsonPrimitive implements JsonElement {
 
 	public static @NotNull JsonPrimitive of(@Nullable Object value) {
 		if (value == null) return NULL;
-		if (value instanceof Boolean bool) return bool ? TRUE : FALSE;
-		if (value instanceof Number number) return new JsonPrimitive(number);
-		if (value instanceof String string) return new JsonPrimitive(string);
+		if (value instanceof Boolean) return (Boolean) value ? TRUE : FALSE;
+		if (value instanceof Number || value instanceof String) return new JsonPrimitive(value);
 		throw new IllegalArgumentException("Invalid input value type!");
 	}
 
@@ -70,25 +69,25 @@ public final class JsonPrimitive implements JsonElement {
 	}
 
 	public @NotNull Boolean getBoolean() {
-		if (value instanceof final Boolean bool) return bool;
+		if (value instanceof Boolean) return (Boolean) value;
 		throw new IllegalStateException();
 	}
 
 	public @NotNull Number getNumber() {
-		if (value instanceof final Number number) return number;
+		if (value instanceof Number) return (Number) value;
 		throw new IllegalStateException();
 	}
 
 	public @NotNull String getString() {
-		if (value instanceof final String string) return string;
+		if (value instanceof String) return (String) value;
 		throw new IllegalStateException();
 	}
 
 	@Override
 	public boolean equals(@Nullable Object object) {
 		if (this == object) return true;
-		if (!(object instanceof final JsonPrimitive primitive)) return false;
-		return Objects.equals(value, primitive.value);
+		if (!(object instanceof JsonPrimitive)) return false;
+		return Objects.equals(value, ((JsonPrimitive) object).value);
 	}
 
 	@Override

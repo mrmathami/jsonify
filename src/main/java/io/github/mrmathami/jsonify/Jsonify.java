@@ -43,16 +43,24 @@ public final class Jsonify {
 	 */
 	private static @NotNull JsonElement nextValue(@NotNull JsonReader reader, @NotNull JsonToken token)
 			throws IOException, JsonException {
-		return switch (token) {
-			case ARRAY_BEGIN -> getArray(reader);
-			case OBJECT_BEGIN -> getObject(reader);
-			case STRING -> JsonPrimitive.of(reader.getString());
-			case NUMBER -> JsonPrimitive.of(reader.getNumber());
-			case TRUE -> JsonPrimitive.TRUE;
-			case FALSE -> JsonPrimitive.FALSE;
-			case NULL -> JsonPrimitive.NULL;
-			default -> throw new AssertionError();
-		};
+		switch (token) {
+			case ARRAY_BEGIN:
+				return getArray(reader);
+			case OBJECT_BEGIN:
+				return getObject(reader);
+			case STRING:
+				return JsonPrimitive.of(reader.getString());
+			case NUMBER:
+				return JsonPrimitive.of(reader.getNumber());
+			case TRUE:
+				return JsonPrimitive.TRUE;
+			case FALSE:
+				return JsonPrimitive.FALSE;
+			case NULL:
+				return JsonPrimitive.NULL;
+			default:
+				throw new AssertionError();
+		}
 	}
 
 	/**
@@ -90,7 +98,6 @@ public final class Jsonify {
 			} else {
 				throw new AssertionError();
 			}
-
 		}
 	}
 }

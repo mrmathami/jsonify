@@ -70,8 +70,8 @@ public final class LazyNumber extends Number {
 	@Override
 	public boolean equals(@Nullable Object object) {
 		return this == object
-				|| object instanceof LazyNumber lazyNumber && asBigDecimal().equals(lazyNumber.asBigDecimal())
-				|| object instanceof Number normalNumber && asBigDecimal().toString().equals(normalNumber.toString());
+				|| object instanceof LazyNumber && asBigDecimal().equals(((LazyNumber) object).asBigDecimal())
+				|| object instanceof Number && asBigDecimal().toString().equals(object.toString());
 	}
 
 	@Override

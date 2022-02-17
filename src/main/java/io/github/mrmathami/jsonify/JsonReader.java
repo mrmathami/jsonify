@@ -186,61 +186,74 @@ public class JsonReader implements Closeable {
 	 */
 	public @NotNull JsonToken nextToken() throws IOException, JsonException {
 		ensureOpen();
-		return switch (state) {
-			case STATE_EXPECT_NAME, STATE_EXPECT_NAME_OR_OBJECT_END -> {
+		switch (state) {
+			case STATE_EXPECT_NAME:
+			case STATE_EXPECT_NAME_OR_OBJECT_END:
 				final JsonToken name = name();
 				// NOTE: the separator ':' are already consumed
 				switch (name) {
-					case NAME -> this.state = STATE_EXPECT_VALUE;
-					case OBJECT_END -> {
+					case NAME:
+						this.state = STATE_EXPECT_VALUE;
+						break;
+					case OBJECT_END:
 						if (state == STATE_EXPECT_NAME_OR_OBJECT_END) {
 							this.state = STATE_OBJECT_END;
 						} else {
 							throw new JsonException("Unexpected closing character!");
 						}
-					}
-					default -> throw new AssertionError();
+						break;
+					default:
+						throw new AssertionError();
 				}
-				yield name;
-			}
-			case STATE_EXPECT_VALUE, STATE_EXPECT_VALUE_OR_ARRAY_END -> {
+				return name;
+			case STATE_EXPECT_VALUE:
+			case STATE_EXPECT_VALUE_OR_ARRAY_END:
 				final JsonToken value = value();
 				switch (value) {
-					case OBJECT_BEGIN -> {
+					case OBJECT_BEGIN:
 						// push Object to the structure stack
 						// set next expected token to be a Name
 						this.state = STATE_EXPECT_NAME_OR_OBJECT_END;
 						lastStructures.clear(++this.lastStructureIndex);
-					}
-					case ARRAY_BEGIN -> {
+						break;
+					case ARRAY_BEGIN:
 						// push Array to the structure stack
 						// set next expected token to be a Value
 						this.state = STATE_EXPECT_VALUE_OR_ARRAY_END;
 						lastStructures.set(++this.lastStructureIndex);
-					}
-					case ARRAY_END -> {
+						break;
+					case ARRAY_END:
 						if (state == STATE_EXPECT_VALUE_OR_ARRAY_END && lastStructureIndex >= 0) {
 							this.state = STATE_ARRAY_END;
 						} else {
 							throw new JsonException("Unexpected closing character!");
 						}
-					}
-					case STRING, NUMBER, TRUE, FALSE, NULL -> consumeSeparator();
-					case EOF -> throw new JsonException("Empty JSON document is invalid!");
-					default -> throw new AssertionError();
+						break;
+					case STRING:
+					case NUMBER:
+					case TRUE:
+					case FALSE:
+					case NULL:
+						consumeSeparator();
+						break;
+					case EOF:
+						throw new JsonException("Empty JSON document is invalid!");
+					default:
+						throw new AssertionError();
 				}
-				yield value;
-			}
-			case STATE_ARRAY_END -> JsonToken.ARRAY_END;
-			case STATE_OBJECT_END -> JsonToken.OBJECT_END;
-			case STATE_EXPECT_DOCUMENT_END -> {
+				return value;
+			case STATE_ARRAY_END:
+				return JsonToken.ARRAY_END;
+			case STATE_OBJECT_END:
+				return JsonToken.OBJECT_END;
+			case STATE_EXPECT_DOCUMENT_END:
 				final int c = readNonWhitespace();
-				if (c < 0) yield JsonToken.EOF;
+				if (c < 0) return JsonToken.EOF;
 				undo(c);
 				throw new JsonException("Unexpected character at the end of the document!");
-			}
-			default -> throw new AssertionError();
-		};
+			default:
+				throw new AssertionError();
+		}
 	}
 
 	/**
@@ -251,30 +264,27 @@ public class JsonReader implements Closeable {
 		if (lastStructureIndex >= 0) {
 			// the reader is inside an object or an array
 			final int c = readNonWhitespace();
-			switch (c) {
-				case ',' -> {
-					// not end of object/array yet
-					this.state = lastStructures.get(lastStructureIndex)
-							? STATE_EXPECT_VALUE // array
-							: STATE_EXPECT_NAME; // object
+			if (c == ',') {
+				// not end of object/array yet
+				this.state = lastStructures.get(lastStructureIndex)
+						? STATE_EXPECT_VALUE // array
+						: STATE_EXPECT_NAME; // object
+			} else if (c == ']') {
+				// end of array. Checking the closing character...
+				if (lastStructures.get(lastStructureIndex)) {
+					this.state = STATE_ARRAY_END;
+				} else {
+					throw new JsonException("Invalid closing character for object!");
 				}
-				case ']' -> {
-					// end of array. Checking the closing character...
-					if (lastStructures.get(lastStructureIndex)) {
-						this.state = STATE_ARRAY_END;
-					} else {
-						throw new JsonException("Invalid closing character for object!");
-					}
+			} else if (c == '}') {
+				// end of object. Checking the closing character...
+				if (!lastStructures.get(lastStructureIndex)) {
+					this.state = STATE_OBJECT_END;
+				} else {
+					throw new JsonException("Invalid closing character for array!");
 				}
-				case '}' -> {
-					// end of object. Checking the closing character...
-					if (!lastStructures.get(lastStructureIndex)) {
-						this.state = STATE_OBJECT_END;
-					} else {
-						throw new JsonException("Invalid closing character for array!");
-					}
-				}
-				default -> throw new JsonException("Unexpected character after a value!");
+			} else {
+				throw new JsonException("Unexpected character after a value!");
 			}
 		} else {
 			// the reader is at the top level, expect an EOF
@@ -360,43 +370,34 @@ public class JsonReader implements Closeable {
 	private @NotNull JsonToken value() throws IOException, JsonException {
 		this.value = null;
 		final int c = readNonWhitespace();
-		switch (c) {
-			case -1:
-				return JsonToken.EOF;
-			case '[':
-				return JsonToken.ARRAY_BEGIN;
-			case ']':
-				return JsonToken.ARRAY_END;
-			case '{':
-				return JsonToken.OBJECT_BEGIN;
-
-			case '\"':
-				this.value = string();
-				this.number = false;
-				return JsonToken.STRING;
-
-			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-':
-				this.value = number(c);
-				this.number = true;
-				return JsonToken.NUMBER;
-
-			case 't':
-				if (read() == 'r' && read() == 'u' && read() == 'e') {
-					return JsonToken.TRUE;
-				}
-				break;
-
-			case 'f':
-				if (read() == 'a' && read() == 'l' && read() == 's' && read() == 'e') {
-					return JsonToken.FALSE;
-				}
-				break;
-
-			case 'n':
-				if (read() == 'u' && read() == 'l' && read() == 'l') {
-					return JsonToken.NULL;
-				}
-				break;
+		if (c == '\"') {
+			this.value = string();
+			this.number = false;
+			return JsonToken.STRING;
+		} else if (c >= '0' && c <= '9' || c == '-') {
+			this.value = number(c);
+			this.number = true;
+			return JsonToken.NUMBER;
+		} else if (c == 't') {
+			if (read() == 'r' && read() == 'u' && read() == 'e') {
+				return JsonToken.TRUE;
+			}
+		} else if (c == 'f') {
+			if (read() == 'a' && read() == 'l' && read() == 's' && read() == 'e') {
+				return JsonToken.FALSE;
+			}
+		} else if (c == 'n') {
+			if (read() == 'u' && read() == 'l' && read() == 'l') {
+				return JsonToken.NULL;
+			}
+		} else if (c == '[') {
+			return JsonToken.ARRAY_BEGIN;
+		} else if (c == ']') {
+			return JsonToken.ARRAY_END;
+		} else if (c == '{') {
+			return JsonToken.OBJECT_BEGIN;
+		} else if (c == -1) {
+			return JsonToken.EOF;
 		}
 		throw new JsonException("Unexpected character when parsing input JSON!");
 	}
@@ -482,28 +483,36 @@ public class JsonReader implements Closeable {
 				builder.appendCodePoint(c);
 			} else if (c == '\\') {
 				final int d = read();
-				builder.appendCodePoint(switch (d) {
-					case 'u' -> {
-						int result = 1;
-						do {
-							int e = read();
-							result = (result << 4) + switch (e) {
-								case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> e - '0';
-								case 'A', 'B', 'C', 'D', 'E', 'F' -> e - 'A' + 10;
-								case 'a', 'b', 'c', 'd', 'e', 'f' -> e - 'a' + 10;
-								default -> throw new JsonException("Invalid escape sequence in string!");
-							};
-						} while (result < 0x10000);
-						yield result - 0x10000;
-					}
-					case 't' -> '\t';
-					case 'b' -> '\b';
-					case 'n' -> '\n';
-					case 'r' -> '\r';
-					case 'f' -> '\f';
-					case '"', '\\', '/' -> d;
-					default -> throw new JsonException("Invalid escape sequence in string!");
-				});
+				if (d == '"' || d == '\\' || d == '/') {
+					builder.append((char) d);
+				} else if (d == 't') {
+					builder.append('\t');
+				} else if (d == 'b') {
+					builder.append('\b');
+				} else if (d == 'n') {
+					builder.append('\n');
+				} else if (d == 'r') {
+					builder.append('\r');
+				} else if (d == 'f') {
+					builder.append('\f');
+				} else if (d == 'u') {
+					int result = 1;
+					do {
+						int e = read();
+						if (e >= '0' && e <= '9') {
+							result = (result << 4) + e - '0';
+						} else if (e >= 'A' && e <= 'F') {
+							result = (result << 4) + e - 'A' + 10;
+						} else if (e >= 'a' && e <= 'f') {
+							result = (result << 4) + e - 'a' + 10;
+						} else {
+							throw new JsonException("Invalid escape sequence in string!");
+						}
+					} while (result < 0x10000);
+					builder.appendCodePoint(result - 0x10000);
+				} else {
+					throw new JsonException("Invalid escape sequence in string!");
+				}
 			} else if (c == '"') {
 				return builder.toString();
 			} else {
