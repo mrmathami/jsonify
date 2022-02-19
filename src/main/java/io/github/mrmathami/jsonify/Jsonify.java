@@ -105,6 +105,9 @@ public final class Jsonify {
 
 	//========================================
 
+	/**
+	 * Save JSON element to output json.
+	 */
 	public static void save(@NotNull Writer outputWriter, @NotNull JsonElement element)
 			throws IOException, JsonException {
 		try (final JsonWriter writer = new JsonWriter(outputWriter)) {
@@ -113,6 +116,9 @@ public final class Jsonify {
 		}
 	}
 
+	/**
+	 * Put an element to the output json.
+	 */
 	private static void putElement(@NotNull JsonWriter writer, @NotNull JsonElement element)
 			throws IOException, JsonException {
 		if (element instanceof JsonArray) {
