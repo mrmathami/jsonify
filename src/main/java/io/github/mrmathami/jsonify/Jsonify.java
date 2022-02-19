@@ -21,6 +21,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
+import java.util.Map;
 
 public final class Jsonify {
 	private Jsonify() {
@@ -98,6 +100,51 @@ public final class Jsonify {
 			} else {
 				throw new AssertionError();
 			}
+		}
+	}
+
+	//========================================
+
+	public static void save(@NotNull Writer outputWriter, @NotNull JsonElement element)
+			throws IOException, JsonException {
+		try (final JsonWriter writer = new JsonWriter(outputWriter)) {
+			putElement(writer, element);
+			if (!writer.isDone()) throw new AssertionError(); // safeguard
+		}
+	}
+
+	private static void putElement(@NotNull JsonWriter writer, @NotNull JsonElement element)
+			throws IOException, JsonException {
+		if (element instanceof JsonArray) {
+			final JsonArray array = (JsonArray) element;
+			writer.beginArray();
+			for (final JsonElement arrayElement : array) {
+				putElement(writer, arrayElement);
+			}
+			writer.endArray();
+		} else if (element instanceof JsonObject) {
+			final JsonObject object = (JsonObject) element;
+			writer.beginObject();
+			for (final Map.Entry<String, JsonElement> entry : object.entrySet()) {
+				writer.name(entry.getKey());
+				putElement(writer, entry.getValue());
+			}
+			writer.endObject();
+		} else if (element instanceof JsonPrimitive) {
+			final JsonPrimitive primitive = (JsonPrimitive) element;
+			if (primitive.isBoolean()) {
+				writer.valueBoolean(primitive.getBoolean());
+			} else if (primitive.isNumber()) {
+				writer.valueNumber(primitive.getNumber());
+			} else if (primitive.isString()) {
+				writer.valueString(primitive.getString());
+			} else if (primitive.isNull()) {
+				writer.valueNull();
+			} else {
+				throw new AssertionError();
+			}
+		} else {
+			throw new AssertionError();
 		}
 	}
 }
