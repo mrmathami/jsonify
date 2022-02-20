@@ -22,6 +22,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.BitSet;
 import java.util.PrimitiveIterator;
 
@@ -253,27 +255,6 @@ public class JsonWriter implements Closeable {
 	}
 
 	/**
-	 * Write a boolean value. Throw JsonException if it is not expected.
-	 */
-	public void valueBoolean(@NotNull Boolean value) throws IOException, JsonException {
-		writeValueRaw(value.toString());
-	}
-
-	/**
-	 * Write a number value. Throw JsonException if it is not expected.
-	 */
-	public void valueNumber(byte value) throws IOException, JsonException {
-		writeValueRaw(String.valueOf(value));
-	}
-
-	/**
-	 * Write a number value. Throw JsonException if it is not expected.
-	 */
-	public void valueNumber(short value) throws IOException, JsonException {
-		writeValueRaw(String.valueOf(value));
-	}
-
-	/**
 	 * Write a number value. Throw JsonException if it is not expected.
 	 */
 	public void valueNumber(int value) throws IOException, JsonException {
@@ -304,7 +285,21 @@ public class JsonWriter implements Closeable {
 	/**
 	 * Write a number value. Throw JsonException if it is not expected.
 	 */
-	public void valueNumber(@NotNull Number value) throws IOException, JsonException {
+	public void valueNumber(@NotNull BigDecimal value) throws IOException, JsonException {
+		writeValueRaw(value.toString());
+	}
+
+	/**
+	 * Write a number value. Throw JsonException if it is not expected.
+	 */
+	public void valueNumber(@NotNull BigInteger value) throws IOException, JsonException {
+		writeValueRaw(value.toString());
+	}
+
+	/**
+	 * Write a number value. Throw JsonException if it is not expected.
+	 */
+	public void valueNumber(@NotNull JsonNumber value) throws IOException, JsonException {
 		writeValueRaw(value.toString());
 	}
 
@@ -379,27 +374,35 @@ public class JsonWriter implements Closeable {
 	 */
 	private void writeStringUnchecked(@NotNull String string) throws IOException {
 		writer.write('"');
-		final PrimitiveIterator.OfInt iterator = string.codePoints().iterator();
-		while (iterator.hasNext()) {
-			final int c = iterator.nextInt();
-			if (c == '"') {
-				writer.write("\\\"");
-			} else if (c == '\\') {
-				writer.write("\\\\");
-			} else if (c >= ' ') {
-				writer.write(Character.toString(c));
-			} else if (c == '\r') {
-				writer.write("\\r");
-			} else if (c == '\n') {
-				writer.write("\\n");
-			} else if (c == '\t') {
-				writer.write("\\t");
+		final int length = string.length();
+		int count = 0;
+		for (int index = 0; index < length; index++) {
+			final int c = string.charAt(index);
+			if (c >= ' ' && c != '"' && c != '\\') {
+				count += 1;
 			} else {
-				writer.write("\\u00");
-				writer.write(c >= 0x10 ? '1' : '0');
-				writer.write(c + (c >= 10 ? 'A' - 10 : '0'));
+				if (count > 0) {
+					writer.write(string, index - count, count);
+					count = 0;
+				}
+				if (c == '"') {
+					writer.write("\\\"");
+				} else if (c == '\\') {
+					writer.write("\\\\");
+				} else if (c == '\r') {
+					writer.write("\\r");
+				} else if (c == '\n') {
+					writer.write("\\n");
+				} else if (c == '\t') {
+					writer.write("\\t");
+				} else {
+					writer.write("\\u00");
+					writer.write(c >= 0x10 ? '1' : '0');
+					writer.write(c + (c >= 10 ? 'A' - 10 : '0'));
+				}
 			}
 		}
+		if (count > 0) writer.write(string, length - count, count);
 		writer.write('"');
 	}
 }

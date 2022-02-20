@@ -25,18 +25,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.BitSet;
 
-import static io.github.mrmathami.jsonify.JsonToken.TOKEN_ARRAY_BEGIN;
-import static io.github.mrmathami.jsonify.JsonToken.TOKEN_ARRAY_END;
-import static io.github.mrmathami.jsonify.JsonToken.TOKEN_EOF;
-import static io.github.mrmathami.jsonify.JsonToken.TOKEN_FALSE;
-import static io.github.mrmathami.jsonify.JsonToken.TOKEN_NAME;
-import static io.github.mrmathami.jsonify.JsonToken.TOKEN_NULL;
-import static io.github.mrmathami.jsonify.JsonToken.TOKEN_NUMBER;
-import static io.github.mrmathami.jsonify.JsonToken.TOKEN_OBJECT_BEGIN;
-import static io.github.mrmathami.jsonify.JsonToken.TOKEN_OBJECT_END;
-import static io.github.mrmathami.jsonify.JsonToken.TOKEN_STRING;
-import static io.github.mrmathami.jsonify.JsonToken.TOKEN_TRUE;
-
 /**
  * JSON reader.
  */
@@ -73,23 +61,24 @@ public class JsonReader implements Closeable {
 	 */
 	private int read() throws IOException {
 		final int undo = this.undo;
-		if (undo >= 0) {
+		if (undo < 0) {
+			int u0 = reader.read();
+			if (u0 < 0 || !Character.isHighSurrogate((char) u0)) {
+				// eof or normal character
+				return u0;
+			}
+			int u1 = reader.read();
+			if (u1 >= 0 && Character.isLowSurrogate((char) u1)) {
+				// extended character
+				return Character.toCodePoint((char) u0, (char) u1);
+			}
+			// invalid/incomplete pair
+			throw new IOException("Invalid input surrogate pair.");
+		} else {
 			this.undo = -1;
 			return undo;
 		}
 
-		int u0 = reader.read();
-		if (u0 < 0 || !Character.isHighSurrogate((char) u0)) {
-			// eof or normal character
-			return u0;
-		}
-		int u1 = reader.read();
-		if (u1 >= 0 && Character.isLowSurrogate((char) u1)) {
-			// extended character
-			return Character.toCodePoint((char) u0, (char) u1);
-		}
-		// invalid/incomplete pair
-		throw new IOException("Invalid input surrogate pair.");
 	}
 
 	/**
@@ -193,17 +182,69 @@ public class JsonReader implements Closeable {
 	 */
 	private int state = STATE_EXPECT_VALUE;
 
-	/**
-	 * Parse next token. Throws JsonParsingException if there is an error while parsing input JSON.
-	 */
-	public @NotNull JsonToken nextToken() throws IOException, JsonException {
-		return JsonToken.values.get(nextTokenIndex());
-	}
+	//========================================
 
 	/**
-	 * Parse next token and return token index. Faster than using Enum.
+	 * Array begin token.
 	 */
-	public int nextTokenIndex() throws IOException, JsonException {
+	public static final int TOKEN_ARRAY_BEGIN = 0;
+
+	/**
+	 * Array end token.
+	 */
+	public static final int TOKEN_ARRAY_END = 1;
+
+	/**
+	 * Object begin token.
+	 */
+	public static final int TOKEN_OBJECT_BEGIN = 2;
+
+	/**
+	 * Object end token.
+	 */
+	public static final int TOKEN_OBJECT_END = 3;
+
+	/**
+	 * A name token.
+	 */
+	public static final int TOKEN_NAME = 4;
+
+	/**
+	 * A string token.
+	 */
+	public static final int TOKEN_STRING = 5;
+
+	/**
+	 * A number token.
+	 */
+	public static final int TOKEN_NUMBER = 6;
+
+	/**
+	 * A boolean true token.
+	 */
+	public static final int TOKEN_TRUE = 7;
+
+	/**
+	 * A boolean false token.
+	 */
+	public static final int TOKEN_FALSE = 8;
+
+	/**
+	 * A null token.
+	 */
+	public static final int TOKEN_NULL = 9;
+
+	/**
+	 * EOF token
+	 */
+	public static final int TOKEN_EOF = 10;
+
+	//========================================
+
+	/**
+	 * Parse next token and return token. Throws JsonException if there is an error while parsing input JSON.
+	 */
+	public int nextToken() throws IOException, JsonException {
 		ensureOpen();
 		switch (state) {
 			case STATE_EXPECT_NAME:
@@ -326,8 +367,8 @@ public class JsonReader implements Closeable {
 			final int currentStructureIndex = this.lastStructureIndex;
 			while (currentStructureIndex <= lastStructureIndex) {
 				while (true) {
-					final JsonToken token = nextToken();
-					if (token == JsonToken.ARRAY_END || token == JsonToken.OBJECT_END) break;
+					final int token = nextToken();
+					if (token == TOKEN_ARRAY_END || token == TOKEN_OBJECT_END) break;
 				}
 				// pop structure stack
 				this.lastStructureIndex -= 1;
@@ -359,10 +400,10 @@ public class JsonReader implements Closeable {
 	}
 
 	/**
-	 * Get last Number token value.
+	 * Get last Number token value. Return a lazy parsed number.
 	 */
-	public @NotNull Number getNumber() {
-		if (value != null && number) return new LazyNumber(value);
+	public @NotNull JsonNumber getNumber() {
+		if (value != null && number) return new JsonNumber(value, true);
 		throw new IllegalStateException("Last token is not a number!");
 	}
 
@@ -430,17 +471,17 @@ public class JsonReader implements Closeable {
 		int c = startCp;
 		if (c == '-') {
 			// minus sign
-			builder.appendCodePoint('-');
+			builder.append('-');
 			c = read();
 		}
 		if (c == '0') {
 			// zero suffix
-			builder.appendCodePoint('0');
+			builder.append('0');
 			c = read();
 		} else if (c >= '1' && c <= '9') {
 			// digits
 			do {
-				builder.appendCodePoint(c);
+				builder.append((char) c);
 				c = read();
 			} while (c >= '0' && c <= '9');
 		} else {
@@ -449,13 +490,13 @@ public class JsonReader implements Closeable {
 		// second part: fraction
 		if (c == '.') {
 			// set decimal
-			builder.appendCodePoint('.');
+			builder.append('.');
 			c = read();
 			// at least one digit
 			if (c >= '0' && c <= '9') {
 				// digits
 				do {
-					builder.appendCodePoint(c);
+					builder.append((char) c);
 					c = read();
 				} while (c >= '0' && c <= '9');
 			} else {
@@ -465,18 +506,18 @@ public class JsonReader implements Closeable {
 		// third part: exponent
 		if (c == 'e' || c == 'E') {
 			// set decimal
-			builder.appendCodePoint(c);
+			builder.append((char) c);
 			c = read();
 			// sign
 			if (c == '+' || c == '-') {
-				builder.appendCodePoint(c);
+				builder.append((char) c);
 				c = read();
 			}
 			// at least one digit
 			if (c >= '0' && c <= '9') {
 				// digits
 				do {
-					builder.appendCodePoint(c);
+					builder.append((char) c);
 					c = read();
 				} while (c >= '0' && c <= '9');
 			} else {
