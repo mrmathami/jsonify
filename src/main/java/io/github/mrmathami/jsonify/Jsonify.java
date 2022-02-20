@@ -24,6 +24,18 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Map;
 
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_ARRAY_BEGIN;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_ARRAY_END;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_EOF;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_FALSE;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_NAME;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_NULL;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_NUMBER;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_OBJECT_BEGIN;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_OBJECT_END;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_STRING;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_TRUE;
+
 public final class Jsonify {
 	private Jsonify() {
 	}
@@ -34,8 +46,8 @@ public final class Jsonify {
 	public static @NotNull JsonElement load(@NotNull Reader inputReader)
 			throws IOException, JsonException {
 		try (final JsonReader reader = new JsonReader(inputReader)) {
-			final JsonElement value = nextValue(reader, reader.nextToken());
-			if (reader.nextToken() != JsonToken.EOF) throw new AssertionError();
+			final JsonElement value = nextValue(reader, reader.nextTokenIndex());
+			if (reader.nextTokenIndex() != TOKEN_EOF) throw new AssertionError();
 			return value;
 		}
 	}
@@ -43,22 +55,22 @@ public final class Jsonify {
 	/**
 	 * Get next value from input JSON.
 	 */
-	private static @NotNull JsonElement nextValue(@NotNull JsonReader reader, @NotNull JsonToken token)
+	private static @NotNull JsonElement nextValue(@NotNull JsonReader reader, int token)
 			throws IOException, JsonException {
 		switch (token) {
-			case ARRAY_BEGIN:
+			case TOKEN_ARRAY_BEGIN:
 				return getArray(reader);
-			case OBJECT_BEGIN:
+			case TOKEN_OBJECT_BEGIN:
 				return getObject(reader);
-			case STRING:
+			case TOKEN_STRING:
 				return JsonPrimitive.of(reader.getString());
-			case NUMBER:
+			case TOKEN_NUMBER:
 				return JsonPrimitive.of(reader.getNumber());
-			case TRUE:
+			case TOKEN_TRUE:
 				return JsonPrimitive.TRUE;
-			case FALSE:
+			case TOKEN_FALSE:
 				return JsonPrimitive.FALSE;
-			case NULL:
+			case TOKEN_NULL:
 				return JsonPrimitive.NULL;
 			default:
 				throw new AssertionError();
@@ -73,8 +85,8 @@ public final class Jsonify {
 		// already inside array
 		final JsonArray array = new JsonArray();
 		while (true) {
-			final JsonToken value = reader.nextToken();
-			if (value != JsonToken.ARRAY_END) {
+			final int value = reader.nextTokenIndex();
+			if (value != TOKEN_ARRAY_END) {
 				array.add(nextValue(reader, value));
 			} else {
 				reader.endStructure();
@@ -91,10 +103,10 @@ public final class Jsonify {
 		// already inside object
 		final JsonObject object = new JsonObject();
 		while (true) {
-			JsonToken jsonToken = reader.nextToken();
-			if (jsonToken == JsonToken.NAME) {
-				object.put(reader.getString(), nextValue(reader, reader.nextToken()));
-			} else if (jsonToken == JsonToken.OBJECT_END) {
+			final int name = reader.nextTokenIndex();
+			if (name == TOKEN_NAME) {
+				object.put(reader.getString(), nextValue(reader, reader.nextTokenIndex()));
+			} else if (name == TOKEN_OBJECT_END) {
 				reader.endStructure();
 				return object;
 			} else {

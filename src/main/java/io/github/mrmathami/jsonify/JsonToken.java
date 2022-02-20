@@ -17,6 +17,10 @@
 
 package io.github.mrmathami.jsonify;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+
 /**
  * Tokens.
  */
@@ -74,5 +78,64 @@ public enum JsonToken {
 	/**
 	 * EOF token
 	 */
-	EOF
+	EOF;
+
+	public static final @NotNull List<JsonToken> values = List.of(values());
+
+	//========================================
+
+	/**
+	 * The ordinal of {@code JsonToken.ARRAY_BEGIN} in {@code JsonToken.values}.
+	 */
+	public static final int TOKEN_ARRAY_BEGIN = 0;
+
+	/**
+	 * The ordinal of {@code JsonToken.ARRAY_END} in {@code JsonToken.values}.
+	 */
+	public static final int TOKEN_ARRAY_END = 1;
+
+	/**
+	 * The ordinal of {@code JsonToken.OBJECT_BEGIN} in {@code JsonToken.values}.
+	 */
+	public static final int TOKEN_OBJECT_BEGIN = 2;
+
+	/**
+	 * The ordinal of {@code JsonToken.OBJECT_END} in {@code JsonToken.values}.
+	 */
+	public static final int TOKEN_OBJECT_END = 3;
+
+	/**
+	 * The ordinal of {@code JsonToken.NAME} in {@code JsonToken.values}.
+	 */
+	public static final int TOKEN_NAME = 4;
+
+	/**
+	 * The ordinal of {@code JsonToken.STRING} in {@code JsonToken.values}.
+	 */
+	public static final int TOKEN_STRING = 5;
+
+	/**
+	 * The ordinal of {@code JsonToken.NUMBER} in {@code JsonToken.values}.
+	 */
+	public static final int TOKEN_NUMBER = 6;
+
+	/**
+	 * The ordinal of {@code JsonToken.TRUE} in {@code JsonToken.values}.
+	 */
+	public static final int TOKEN_TRUE = 7;
+
+	/**
+	 * The ordinal of {@code JsonToken.FALSE} in {@code JsonToken.values}.
+	 */
+	public static final int TOKEN_FALSE = 8;
+
+	/**
+	 * The ordinal of {@code JsonToken.NULL} in {@code JsonToken.values}.
+	 */
+	public static final int TOKEN_NULL = 9;
+
+	/**
+	 * The ordinal of {@code JsonToken.EOF} in {@code JsonToken.values}.
+	 */
+	public static final int TOKEN_EOF = 10;
 }

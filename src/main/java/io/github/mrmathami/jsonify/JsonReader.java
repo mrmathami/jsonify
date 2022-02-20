@@ -25,6 +25,18 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.BitSet;
 
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_ARRAY_BEGIN;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_ARRAY_END;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_EOF;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_FALSE;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_NAME;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_NULL;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_NUMBER;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_OBJECT_BEGIN;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_OBJECT_END;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_STRING;
+import static io.github.mrmathami.jsonify.JsonToken.TOKEN_TRUE;
+
 /**
  * JSON reader.
  */
@@ -185,17 +197,24 @@ public class JsonReader implements Closeable {
 	 * Parse next token. Throws JsonParsingException if there is an error while parsing input JSON.
 	 */
 	public @NotNull JsonToken nextToken() throws IOException, JsonException {
+		return JsonToken.values.get(nextTokenIndex());
+	}
+
+	/**
+	 * Parse next token and return token index. Faster than using Enum.
+	 */
+	public int nextTokenIndex() throws IOException, JsonException {
 		ensureOpen();
 		switch (state) {
 			case STATE_EXPECT_NAME:
 			case STATE_EXPECT_NAME_OR_OBJECT_END:
-				final JsonToken name = name();
+				final int name = name();
 				// NOTE: the separator ':' are already consumed
 				switch (name) {
-					case NAME:
+					case TOKEN_NAME:
 						this.state = STATE_EXPECT_VALUE;
 						break;
-					case OBJECT_END:
+					case TOKEN_OBJECT_END:
 						if (state == STATE_EXPECT_NAME_OR_OBJECT_END) {
 							this.state = STATE_OBJECT_END;
 						} else {
@@ -208,47 +227,47 @@ public class JsonReader implements Closeable {
 				return name;
 			case STATE_EXPECT_VALUE:
 			case STATE_EXPECT_VALUE_OR_ARRAY_END:
-				final JsonToken value = value();
+				final int value = value();
 				switch (value) {
-					case OBJECT_BEGIN:
+					case TOKEN_OBJECT_BEGIN:
 						// push Object to the structure stack
 						// set next expected token to be a Name
 						this.state = STATE_EXPECT_NAME_OR_OBJECT_END;
 						lastStructures.clear(++this.lastStructureIndex);
 						break;
-					case ARRAY_BEGIN:
+					case TOKEN_ARRAY_BEGIN:
 						// push Array to the structure stack
 						// set next expected token to be a Value
 						this.state = STATE_EXPECT_VALUE_OR_ARRAY_END;
 						lastStructures.set(++this.lastStructureIndex);
 						break;
-					case ARRAY_END:
+					case TOKEN_ARRAY_END:
 						if (state == STATE_EXPECT_VALUE_OR_ARRAY_END && lastStructureIndex >= 0) {
 							this.state = STATE_ARRAY_END;
 						} else {
 							throw new JsonException("Unexpected closing character!");
 						}
 						break;
-					case STRING:
-					case NUMBER:
-					case TRUE:
-					case FALSE:
-					case NULL:
+					case TOKEN_STRING:
+					case TOKEN_NUMBER:
+					case TOKEN_TRUE:
+					case TOKEN_FALSE:
+					case TOKEN_NULL:
 						consumeSeparator();
 						break;
-					case EOF:
+					case TOKEN_EOF:
 						throw new JsonException("Empty JSON document is invalid!");
 					default:
 						throw new AssertionError();
 				}
 				return value;
 			case STATE_ARRAY_END:
-				return JsonToken.ARRAY_END;
+				return TOKEN_ARRAY_END;
 			case STATE_OBJECT_END:
-				return JsonToken.OBJECT_END;
+				return TOKEN_OBJECT_END;
 			case STATE_EXPECT_DOCUMENT_END:
 				final int c = readNonWhitespace();
-				if (c < 0) return JsonToken.EOF;
+				if (c < 0) return TOKEN_EOF;
 				undo(c);
 				throw new JsonException("Unexpected character at the end of the document!");
 			default:
@@ -350,16 +369,16 @@ public class JsonReader implements Closeable {
 	/**
 	 * Consume a Name token and the separator token.
 	 */
-	private @NotNull JsonToken name() throws IOException, JsonException {
+	private int name() throws IOException, JsonException {
 		final int c = readNonWhitespace();
 		if (c == '\"') {
 			this.value = string();
 			this.number = false;
 			if (readNonWhitespace() == ':') {
-				return JsonToken.NAME;
+				return TOKEN_NAME;
 			}
 		} else if (c == '}') {
-			return JsonToken.OBJECT_END;
+			return TOKEN_OBJECT_END;
 		}
 		throw new JsonException("Unexpected character when parsing input JSON!");
 	}
@@ -367,37 +386,37 @@ public class JsonReader implements Closeable {
 	/**
 	 * Consume the Value token but DOES NOT consume the separator token.
 	 */
-	private @NotNull JsonToken value() throws IOException, JsonException {
+	private int value() throws IOException, JsonException {
 		this.value = null;
 		final int c = readNonWhitespace();
 		if (c == '\"') {
 			this.value = string();
 			this.number = false;
-			return JsonToken.STRING;
+			return TOKEN_STRING;
 		} else if (c >= '0' && c <= '9' || c == '-') {
 			this.value = number(c);
 			this.number = true;
-			return JsonToken.NUMBER;
+			return TOKEN_NUMBER;
 		} else if (c == 't') {
 			if (read() == 'r' && read() == 'u' && read() == 'e') {
-				return JsonToken.TRUE;
+				return TOKEN_TRUE;
 			}
 		} else if (c == 'f') {
 			if (read() == 'a' && read() == 'l' && read() == 's' && read() == 'e') {
-				return JsonToken.FALSE;
+				return TOKEN_FALSE;
 			}
 		} else if (c == 'n') {
 			if (read() == 'u' && read() == 'l' && read() == 'l') {
-				return JsonToken.NULL;
+				return TOKEN_NULL;
 			}
 		} else if (c == '[') {
-			return JsonToken.ARRAY_BEGIN;
+			return TOKEN_ARRAY_BEGIN;
 		} else if (c == ']') {
-			return JsonToken.ARRAY_END;
+			return TOKEN_ARRAY_END;
 		} else if (c == '{') {
-			return JsonToken.OBJECT_BEGIN;
+			return TOKEN_OBJECT_BEGIN;
 		} else if (c == -1) {
-			return JsonToken.EOF;
+			return TOKEN_EOF;
 		}
 		throw new JsonException("Unexpected character when parsing input JSON!");
 	}
