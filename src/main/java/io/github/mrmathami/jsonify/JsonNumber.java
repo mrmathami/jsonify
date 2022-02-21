@@ -24,7 +24,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
- * Json number. Can be lazy parsed.
+ * Json number. Can be lazy parsed if came from the reader.
  */
 public final class JsonNumber implements JsonElement {
 	private @NotNull Object value;
@@ -53,8 +53,8 @@ public final class JsonNumber implements JsonElement {
 		this.value = value;
 	}
 
-	public JsonNumber(@NotNull String string, boolean lazyParsed) {
-		this.value = lazyParsed ? string : new BigDecimal(string);
+	JsonNumber(@NotNull String string) {
+		this.value = string;
 	}
 
 	public @NotNull Number toNumber() {
@@ -62,6 +62,10 @@ public final class JsonNumber implements JsonElement {
 		final BigDecimal decimal = new BigDecimal(value.toString());
 		this.value = decimal;
 		return decimal;
+	}
+
+	@NotNull String toStringLazy() {
+		return value.toString();
 	}
 
 	@Override

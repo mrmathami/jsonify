@@ -300,7 +300,7 @@ public class JsonWriter implements Closeable {
 	 * Write a number value. Throw JsonException if it is not expected.
 	 */
 	public void valueNumber(@NotNull JsonNumber value) throws IOException, JsonException {
-		writeValueRaw(value.toString());
+		writeValueRaw(value.toStringLazy());
 	}
 
 	/**
@@ -385,20 +385,33 @@ public class JsonWriter implements Closeable {
 					writer.write(string, index - count, count);
 					count = 0;
 				}
-				if (c == '"') {
-					writer.write("\\\"");
-				} else if (c == '\\') {
-					writer.write("\\\\");
-				} else if (c == '\r') {
-					writer.write("\\r");
-				} else if (c == '\n') {
-					writer.write("\\n");
-				} else if (c == '\t') {
-					writer.write("\\t");
-				} else {
-					writer.write("\\u00");
-					writer.write(c >= 0x10 ? '1' : '0');
-					writer.write(c + (c >= 10 ? 'A' - 10 : '0'));
+				switch (c) {
+					case '"':
+						writer.write("\\\"");
+						break;
+					case '\\':
+						writer.write("\\\\");
+						break;
+					case '\r':
+						writer.write("\\r");
+						break;
+					case '\n':
+						writer.write("\\n");
+						break;
+					case '\t':
+						writer.write("\\t");
+						break;
+					case '\b':
+						writer.write("\\b");
+						break;
+					case '\f':
+						writer.write("\\f");
+						break;
+					default:
+						writer.write("\\u00");
+						writer.write(c >= 0x10 ? '1' : '0');
+						writer.write(c + (c >= 10 ? 'A' - 10 : '0'));
+						break;
 				}
 			}
 		}

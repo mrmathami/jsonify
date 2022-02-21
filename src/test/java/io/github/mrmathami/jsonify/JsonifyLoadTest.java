@@ -437,8 +437,18 @@ public class JsonifyLoadTest {
 	@Test
 	public void loadNumberIntegerBig() throws IOException {
 		try {
-			final JsonElement element = Jsonify.load(new StringReader("12345678901234567890"));
-			Assertions.assertEquals(element, new JsonNumber(new BigInteger("12345678901234567890")));
+			final JsonElement element = Jsonify.load(new StringReader("123456789012345678901234567890"));
+			Assertions.assertEquals(element, new JsonNumber(new BigInteger("123456789012345678901234567890")));
+		} catch (final JsonException e) {
+			Assertions.fail(e);
+		}
+	}
+
+	@Test
+	public void loadNumberIntegerNegative() throws IOException {
+		try {
+			final JsonElement element = Jsonify.load(new StringReader("-123456789012345678901234567890"));
+			Assertions.assertEquals(element, new JsonNumber(new BigInteger("-123456789012345678901234567890")));
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -457,8 +467,18 @@ public class JsonifyLoadTest {
 	@Test
 	public void loadNumberDecimalFractionBig() throws IOException {
 		try {
-			final JsonElement element = Jsonify.load(new StringReader("0.12345678901234567890"));
-			Assertions.assertEquals(element, new JsonNumber(new BigDecimal("0.12345678901234567890")));
+			final JsonElement element = Jsonify.load(new StringReader("0.123456789012345678901234567890"));
+			Assertions.assertEquals(element, new JsonNumber(new BigDecimal("0.123456789012345678901234567890")));
+		} catch (final JsonException e) {
+			Assertions.fail(e);
+		}
+	}
+
+	@Test
+	public void loadNumberDecimalFractionNegative() throws IOException {
+		try {
+			final JsonElement element = Jsonify.load(new StringReader("-0.123456789012345678901234567890"));
+			Assertions.assertEquals(element, new JsonNumber(new BigDecimal("-0.123456789012345678901234567890")));
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}

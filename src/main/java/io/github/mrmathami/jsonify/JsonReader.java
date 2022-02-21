@@ -26,7 +26,7 @@ import java.io.Reader;
 import java.util.BitSet;
 
 /**
- * JSON reader.
+ * JSON reader. The input reader should REALLY be a buffered one.
  */
 public class JsonReader implements Closeable {
 	/**
@@ -403,7 +403,7 @@ public class JsonReader implements Closeable {
 	 * Get last Number token value. Return a lazy parsed number.
 	 */
 	public @NotNull JsonNumber getNumber() {
-		if (value != null && number) return new JsonNumber(value, true);
+		if (value != null && number) return new JsonNumber(value);
 		throw new IllegalStateException("Last token is not a number!");
 	}
 
