@@ -21,6 +21,19 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Writer;
+import java.util.Map;
+
+import static io.github.mrmathami.jsonify.JsonReader.TOKEN_ARRAY_BEGIN;
+import static io.github.mrmathami.jsonify.JsonReader.TOKEN_ARRAY_END;
+import static io.github.mrmathami.jsonify.JsonReader.TOKEN_FALSE;
+import static io.github.mrmathami.jsonify.JsonReader.TOKEN_NAME;
+import static io.github.mrmathami.jsonify.JsonReader.TOKEN_NULL;
+import static io.github.mrmathami.jsonify.JsonReader.TOKEN_NUMBER;
+import static io.github.mrmathami.jsonify.JsonReader.TOKEN_OBJECT_BEGIN;
+import static io.github.mrmathami.jsonify.JsonReader.TOKEN_OBJECT_END;
+import static io.github.mrmathami.jsonify.JsonReader.TOKEN_STRING;
+import static io.github.mrmathami.jsonify.JsonReader.TOKEN_TRUE;
 
 public final class Jsonify {
 	private Jsonify() {
@@ -33,7 +46,7 @@ public final class Jsonify {
 			throws IOException, JsonException {
 		try (final JsonReader reader = new JsonReader(inputReader)) {
 			final JsonElement value = nextValue(reader, reader.nextToken());
-			if (reader.nextToken() != JsonToken.EOF) throw new AssertionError();
+			reader.nextToken();
 			return value;
 		}
 	}
@@ -41,18 +54,26 @@ public final class Jsonify {
 	/**
 	 * Get next value from input JSON.
 	 */
-	private static @NotNull JsonElement nextValue(@NotNull JsonReader reader, @NotNull JsonToken token)
+	private static @NotNull JsonElement nextValue(@NotNull JsonReader reader, int token)
 			throws IOException, JsonException {
-		return switch (token) {
-			case ARRAY_BEGIN -> getArray(reader);
-			case OBJECT_BEGIN -> getObject(reader);
-			case STRING -> JsonPrimitive.of(reader.getString());
-			case NUMBER -> JsonPrimitive.of(reader.getNumber());
-			case TRUE -> JsonPrimitive.TRUE;
-			case FALSE -> JsonPrimitive.FALSE;
-			case NULL -> JsonPrimitive.NULL;
-			default -> throw new AssertionError();
-		};
+		switch (token) {
+			case TOKEN_ARRAY_BEGIN:
+				return getArray(reader);
+			case TOKEN_OBJECT_BEGIN:
+				return getObject(reader);
+			case TOKEN_STRING:
+				return new JsonString(reader.getString());
+			case TOKEN_NUMBER:
+				return reader.getNumber();
+			case TOKEN_TRUE:
+				return JsonPrimitive.TRUE;
+			case TOKEN_FALSE:
+				return JsonPrimitive.FALSE;
+			case TOKEN_NULL:
+				return JsonPrimitive.NULL;
+			default:
+				throw new AssertionError();
+		}
 	}
 
 	/**
@@ -63,8 +84,8 @@ public final class Jsonify {
 		// already inside array
 		final JsonArray array = new JsonArray();
 		while (true) {
-			final JsonToken value = reader.nextToken();
-			if (value != JsonToken.ARRAY_END) {
+			final int value = reader.nextToken();
+			if (value != TOKEN_ARRAY_END) {
 				array.add(nextValue(reader, value));
 			} else {
 				reader.endStructure();
@@ -81,16 +102,67 @@ public final class Jsonify {
 		// already inside object
 		final JsonObject object = new JsonObject();
 		while (true) {
-			JsonToken jsonToken = reader.nextToken();
-			if (jsonToken == JsonToken.NAME) {
+			final int name = reader.nextToken();
+			if (name == TOKEN_NAME) {
 				object.put(reader.getString(), nextValue(reader, reader.nextToken()));
-			} else if (jsonToken == JsonToken.OBJECT_END) {
+			} else if (name == TOKEN_OBJECT_END) {
 				reader.endStructure();
 				return object;
 			} else {
 				throw new AssertionError();
 			}
+		}
+	}
 
+	//========================================
+
+	/**
+	 * Save JSON element to output json.
+	 */
+	public static void save(@NotNull Writer outputWriter, @NotNull JsonElement element)
+			throws IOException, JsonException {
+		try (final JsonWriter writer = new JsonWriter(outputWriter)) {
+			putElement(writer, element);
+			if (!writer.isDone()) throw new AssertionError(); // safeguard
+		}
+	}
+
+	/**
+	 * Put an element to the output json.
+	 */
+	private static void putElement(@NotNull JsonWriter writer, @NotNull JsonElement element)
+			throws IOException, JsonException {
+		if (element instanceof JsonNumber) {
+			writer.valueNumber((JsonNumber) element);
+		} else if (element instanceof JsonString) {
+			writer.valueString(element.toString());
+		} else if (element instanceof JsonPrimitive) {
+			if (element == JsonPrimitive.TRUE) {
+				writer.valueBoolean(true);
+			} else if (element == JsonPrimitive.FALSE) {
+				writer.valueBoolean(false);
+			} else if (element == JsonPrimitive.NULL) {
+				writer.valueNull();
+			} else {
+				throw new AssertionError();
+			}
+		} else if (element instanceof JsonArray) {
+			final JsonArray array = (JsonArray) element;
+			writer.beginArray();
+			for (final JsonElement arrayElement : array) {
+				putElement(writer, arrayElement);
+			}
+			writer.endArray();
+		} else if (element instanceof JsonObject) {
+			final JsonObject object = (JsonObject) element;
+			writer.beginObject();
+			for (final Map.Entry<String, JsonElement> entry : object.entrySet()) {
+				writer.name(entry.getKey());
+				putElement(writer, entry.getValue());
+			}
+			writer.endObject();
+		} else {
+			throw new AssertionError();
 		}
 	}
 }

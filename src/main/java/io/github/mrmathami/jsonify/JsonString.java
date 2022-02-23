@@ -17,62 +17,28 @@
 
 package io.github.mrmathami.jsonify;
 
-/**
- * Tokens.
- */
-public enum JsonToken {
-	/**
-	 * Array begin token.
-	 */
-	ARRAY_BEGIN,
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-	/**
-	 * Array end token.
-	 */
-	ARRAY_END,
+public final class JsonString implements JsonElement {
+	private final @NotNull String value;
 
-	/**
-	 * Object begin token.
-	 */
-	OBJECT_BEGIN,
+	public JsonString(@NotNull String value) {
+		this.value = value;
+	}
 
-	/**
-	 * Object end token.
-	 */
-	OBJECT_END,
+	@Override
+	public boolean equals(@Nullable Object object) {
+		return this == object || object instanceof JsonString && value.equals(object.toString());
+	}
 
-	/**
-	 * A name token.
-	 */
-	NAME,
+	@Override
+	public int hashCode() {
+		return value.hashCode();
+	}
 
-	/**
-	 * A string token.
-	 */
-	STRING,
-
-	/**
-	 * A number token.
-	 */
-	NUMBER,
-
-	/**
-	 * A boolean true token.
-	 */
-	TRUE,
-
-	/**
-	 * A boolean false token.
-	 */
-	FALSE,
-
-	/**
-	 * A null token.
-	 */
-	NULL,
-
-	/**
-	 * EOF token
-	 */
-	EOF
+	@Override
+	public @NotNull String toString() {
+		return value;
+	}
 }

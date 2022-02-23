@@ -18,118 +18,20 @@
 package io.github.mrmathami.jsonify;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
 
 public final class JsonPrimitive implements JsonElement {
-	public static final @NotNull JsonPrimitive NULL = new JsonPrimitive(null);
-	public static final @NotNull JsonPrimitive TRUE = new JsonPrimitive(Boolean.TRUE);
-	public static final @NotNull JsonPrimitive FALSE = new JsonPrimitive(Boolean.FALSE);
+	public static final @NotNull JsonPrimitive TRUE = new JsonPrimitive("true");
+	public static final @NotNull JsonPrimitive FALSE = new JsonPrimitive("false");
+	public static final @NotNull JsonPrimitive NULL = new JsonPrimitive("null");
 
-	private final @Nullable Object value;
+	private final @NotNull String string;
 
-	private JsonPrimitive(@Nullable Object value) {
-		this.value = value;
-	}
-
-	public static @NotNull JsonPrimitive of(boolean value) {
-		return value ? TRUE : FALSE;
-	}
-
-	public static @NotNull JsonPrimitive of(byte value) {
-		return of(Byte.valueOf(value));
-	}
-
-	public static @NotNull JsonPrimitive of(short value) {
-		return of(Short.valueOf(value));
-	}
-
-	public static @NotNull JsonPrimitive of(int value) {
-		return of(Integer.valueOf(value));
-	}
-
-	public static @NotNull JsonPrimitive of(long value) {
-		return of(Long.valueOf(value));
-	}
-
-	public static @NotNull JsonPrimitive of(float value) {
-		return of(Float.valueOf(value));
-	}
-
-	public static @NotNull JsonPrimitive of(double value) {
-		return of(Double.valueOf(value));
-	}
-
-	public static @NotNull JsonPrimitive of(char value) {
-		return of(String.valueOf(value));
-	}
-
-	public static @NotNull JsonPrimitive of(@NotNull Boolean value) {
-		return new JsonPrimitive(value);
-	}
-
-	public static @NotNull JsonPrimitive of(@NotNull Number value) {
-		return new JsonPrimitive(value);
-	}
-
-	public static @NotNull JsonPrimitive of(@NotNull String value) {
-		return new JsonPrimitive(value);
-	}
-
-	public static @NotNull JsonPrimitive of(@Nullable Object value) {
-		if (value == null) return NULL;
-		if (value instanceof Boolean bool) return bool ? TRUE : FALSE;
-		if (value instanceof Number number) return new JsonPrimitive(number);
-		if (value instanceof String string) return new JsonPrimitive(string);
-		throw new IllegalArgumentException("Invalid input value type!");
-	}
-
-	public boolean isNull() {
-		return this == NULL;
-	}
-
-	public boolean isBoolean() {
-		return value instanceof Boolean;
-	}
-
-	public boolean isNumber() {
-		return value instanceof Number;
-	}
-
-	public boolean isString() {
-		return value instanceof String;
-	}
-
-	public @NotNull Boolean getBoolean() {
-		if (value instanceof final Boolean bool) return bool;
-		throw new IllegalStateException();
-	}
-
-	public @NotNull Number getNumber() {
-		if (value instanceof final Number number) return number;
-		throw new IllegalStateException();
-	}
-
-	public @NotNull String getString() {
-		if (value instanceof final String string) return string;
-		throw new IllegalStateException();
-	}
-
-	@Override
-	public boolean equals(@Nullable Object object) {
-		if (this == object) return true;
-		if (!(object instanceof final JsonPrimitive primitive)) return false;
-		return Objects.equals(value, primitive.value);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(value);
+	private JsonPrimitive(@NotNull String string) {
+		this.string = string;
 	}
 
 	@Override
 	public @NotNull String toString() {
-		return Objects.toString(value);
+		return string;
 	}
 }

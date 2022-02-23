@@ -24,58 +24,62 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
- * Lazy parsed number.
+ * Json number. Can be lazy parsed if came from the reader.
  */
-public final class LazyNumber extends Number {
-	private final @NotNull String numberString;
-	private @Nullable BigDecimal decimal;
+public final class JsonNumber implements JsonElement {
+	private @NotNull Object value;
 
-	public LazyNumber(@NotNull String numberString) {
-		this.numberString = numberString;
+	public JsonNumber(int value) {
+		this.value = value;
 	}
 
-	@Override
-	public int intValue() {
-		return asBigDecimal().intValue();
+	public JsonNumber(long value) {
+		this.value = value;
 	}
 
-	@Override
-	public long longValue() {
-		return asBigDecimal().longValue();
+	public JsonNumber(float value) {
+		this.value = value;
 	}
 
-	@Override
-	public float floatValue() {
-		return asBigDecimal().floatValue();
+	public JsonNumber(double value) {
+		this.value = value;
 	}
 
-	@Override
-	public double doubleValue() {
-		return asBigDecimal().doubleValue();
+	public JsonNumber(@NotNull BigDecimal value) {
+		this.value = value;
 	}
 
-	public @NotNull BigInteger asBigInteger() {
-		return asBigDecimal().toBigInteger();
+	public JsonNumber(@NotNull BigInteger value) {
+		this.value = value;
 	}
 
-	public @NotNull BigDecimal asBigDecimal() {
-		return decimal != null ? decimal : (this.decimal = new BigDecimal(numberString));
+	JsonNumber(@NotNull String string) {
+		this.value = string;
+	}
+
+	public @NotNull Number toNumber() {
+		if (value instanceof Number) return (Number) value;
+		final BigDecimal decimal = new BigDecimal(value.toString());
+		this.value = decimal;
+		return decimal;
+	}
+
+	@NotNull String toStringLazy() {
+		return value.toString();
 	}
 
 	@Override
 	public @NotNull String toString() {
-		return asBigDecimal().toString();
+		return toNumber().toString();
 	}
 
 	@Override
 	public boolean equals(@Nullable Object object) {
-		return this == object
-				|| object instanceof LazyNumber lazyNumber && asBigDecimal().equals(lazyNumber.asBigDecimal())
-				|| object instanceof Number normalNumber && asBigDecimal().toString().equals(normalNumber.toString());
+		return this == object || object instanceof JsonNumber && toString().equals(object.toString());
 	}
 
 	@Override
 	public int hashCode() {
-		return asBigDecimal().hashCode();
+		return toNumber().hashCode();
 	}
 }
