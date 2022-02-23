@@ -15,19 +15,23 @@
  * along with jsonify. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.mrmathami.jsonify;
+package io.github.mrmathami.jsonify.test;
 
+import io.github.mrmathami.jsonify.JsonArray;
+import io.github.mrmathami.jsonify.JsonElement;
+import io.github.mrmathami.jsonify.JsonException;
+import io.github.mrmathami.jsonify.JsonNumber;
+import io.github.mrmathami.jsonify.JsonObject;
+import io.github.mrmathami.jsonify.JsonPrimitive;
+import io.github.mrmathami.jsonify.JsonString;
+import io.github.mrmathami.jsonify.Jsonify;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -41,8 +45,8 @@ public class JsonifyLoadTest {
 	public void loadArrayEmpty() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("[]"));
-			Assertions.assertEquals(element.getClass(), JsonArray.class);
-			Assertions.assertEquals(element, List.of());
+			Assertions.assertEquals(JsonArray.class, element.getClass());
+			Assertions.assertEquals(List.of(), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -52,8 +56,8 @@ public class JsonifyLoadTest {
 	public void loadArrayNull() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("[null]"));
-			Assertions.assertEquals(element.getClass(), JsonArray.class);
-			Assertions.assertEquals(element, List.of(JsonPrimitive.NULL));
+			Assertions.assertEquals(JsonArray.class, element.getClass());
+			Assertions.assertEquals(List.of(JsonPrimitive.NULL), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -63,8 +67,8 @@ public class JsonifyLoadTest {
 	public void loadArrayFalse() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("[false]"));
-			Assertions.assertEquals(element.getClass(), JsonArray.class);
-			Assertions.assertEquals(element, List.of(JsonPrimitive.FALSE));
+			Assertions.assertEquals(JsonArray.class, element.getClass());
+			Assertions.assertEquals(List.of(JsonPrimitive.FALSE), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -74,8 +78,8 @@ public class JsonifyLoadTest {
 	public void loadArrayTrue() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("[true]"));
-			Assertions.assertEquals(element.getClass(), JsonArray.class);
-			Assertions.assertEquals(element, List.of(JsonPrimitive.TRUE));
+			Assertions.assertEquals(JsonArray.class, element.getClass());
+			Assertions.assertEquals(List.of(JsonPrimitive.TRUE), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -85,8 +89,8 @@ public class JsonifyLoadTest {
 	public void loadArrayString() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("[\"\"]"));
-			Assertions.assertEquals(element.getClass(), JsonArray.class);
-			Assertions.assertEquals(element, List.of(new JsonString("")));
+			Assertions.assertEquals(JsonArray.class, element.getClass());
+			Assertions.assertEquals(List.of(new JsonString("")), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -96,8 +100,8 @@ public class JsonifyLoadTest {
 	public void loadArrayNumber() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("[0]"));
-			Assertions.assertEquals(element.getClass(), JsonArray.class);
-			Assertions.assertEquals(element, List.of(new JsonNumber(0)));
+			Assertions.assertEquals(JsonArray.class, element.getClass());
+			Assertions.assertEquals(List.of(new JsonNumber(0)), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -107,8 +111,8 @@ public class JsonifyLoadTest {
 	public void loadArrayArray() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("[[]]"));
-			Assertions.assertEquals(element.getClass(), JsonArray.class);
-			Assertions.assertEquals(element, List.of(List.of()));
+			Assertions.assertEquals(JsonArray.class, element.getClass());
+			Assertions.assertEquals(List.of(List.of()), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -118,8 +122,8 @@ public class JsonifyLoadTest {
 	public void loadArrayObject() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("[{}]"));
-			Assertions.assertEquals(element.getClass(), JsonArray.class);
-			Assertions.assertEquals(element, List.of(Map.of()));
+			Assertions.assertEquals(JsonArray.class, element.getClass());
+			Assertions.assertEquals(List.of(Map.of()), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -129,8 +133,8 @@ public class JsonifyLoadTest {
 	public void loadArrayDouble() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("[null,null]"));
-			Assertions.assertEquals(element.getClass(), JsonArray.class);
-			Assertions.assertEquals(element, List.of(JsonPrimitive.NULL, JsonPrimitive.NULL));
+			Assertions.assertEquals(JsonArray.class, element.getClass());
+			Assertions.assertEquals(List.of(JsonPrimitive.NULL, JsonPrimitive.NULL), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -140,8 +144,8 @@ public class JsonifyLoadTest {
 	public void loadArrayTriple() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("[null,null,null]"));
-			Assertions.assertEquals(element.getClass(), JsonArray.class);
-			Assertions.assertEquals(element, List.of(JsonPrimitive.NULL, JsonPrimitive.NULL, JsonPrimitive.NULL));
+			Assertions.assertEquals(JsonArray.class, element.getClass());
+			Assertions.assertEquals(List.of(JsonPrimitive.NULL, JsonPrimitive.NULL, JsonPrimitive.NULL), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -152,8 +156,8 @@ public class JsonifyLoadTest {
 		try {
 			final String input = String.join(WHITESPACES, "", "[", "null", ",", "null", ",", "null", "]", "");
 			final JsonElement element = Jsonify.load(new StringReader(input));
-			Assertions.assertEquals(element.getClass(), JsonArray.class);
-			Assertions.assertEquals(element, List.of(JsonPrimitive.NULL, JsonPrimitive.NULL, JsonPrimitive.NULL));
+			Assertions.assertEquals(JsonArray.class, element.getClass());
+			Assertions.assertEquals(List.of(JsonPrimitive.NULL, JsonPrimitive.NULL, JsonPrimitive.NULL), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -192,8 +196,8 @@ public class JsonifyLoadTest {
 	public void loadObjectEmpty() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("{}"));
-			Assertions.assertEquals(element.getClass(), JsonObject.class);
-			Assertions.assertEquals(element, Map.of());
+			Assertions.assertEquals(JsonObject.class, element.getClass());
+			Assertions.assertEquals(Map.of(), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -203,8 +207,8 @@ public class JsonifyLoadTest {
 	public void loadObjectNull() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("{\"\":null}"));
-			Assertions.assertEquals(element.getClass(), JsonObject.class);
-			Assertions.assertEquals(element, Map.of("", JsonPrimitive.NULL));
+			Assertions.assertEquals(JsonObject.class, element.getClass());
+			Assertions.assertEquals(Map.of("", JsonPrimitive.NULL), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -214,8 +218,8 @@ public class JsonifyLoadTest {
 	public void loadObjectFalse() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("{\"\":false}"));
-			Assertions.assertEquals(element.getClass(), JsonObject.class);
-			Assertions.assertEquals(element, Map.of("", JsonPrimitive.FALSE));
+			Assertions.assertEquals(JsonObject.class, element.getClass());
+			Assertions.assertEquals(Map.of("", JsonPrimitive.FALSE), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -225,8 +229,8 @@ public class JsonifyLoadTest {
 	public void loadObjectTrue() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("{\"\":true}"));
-			Assertions.assertEquals(element.getClass(), JsonObject.class);
-			Assertions.assertEquals(element, Map.of("", JsonPrimitive.TRUE));
+			Assertions.assertEquals(JsonObject.class, element.getClass());
+			Assertions.assertEquals(Map.of("", JsonPrimitive.TRUE), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -236,8 +240,8 @@ public class JsonifyLoadTest {
 	public void loadObjectString() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("{\"\":\"\"}"));
-			Assertions.assertEquals(element.getClass(), JsonObject.class);
-			Assertions.assertEquals(element, Map.of("", new JsonString("")));
+			Assertions.assertEquals(JsonObject.class, element.getClass());
+			Assertions.assertEquals(Map.of("", new JsonString("")), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -247,8 +251,8 @@ public class JsonifyLoadTest {
 	public void loadObjectNumber() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("{\"\":0}"));
-			Assertions.assertEquals(element.getClass(), JsonObject.class);
-			Assertions.assertEquals(element, Map.of("", new JsonNumber(0)));
+			Assertions.assertEquals(JsonObject.class, element.getClass());
+			Assertions.assertEquals(Map.of("", new JsonNumber(0)), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -258,8 +262,8 @@ public class JsonifyLoadTest {
 	public void loadObjectArray() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("{\"\":[]}"));
-			Assertions.assertEquals(element.getClass(), JsonObject.class);
-			Assertions.assertEquals(element, Map.of("", List.of()));
+			Assertions.assertEquals(JsonObject.class, element.getClass());
+			Assertions.assertEquals(Map.of("", List.of()), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -269,8 +273,8 @@ public class JsonifyLoadTest {
 	public void loadObjectObject() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("{\"\":{}}"));
-			Assertions.assertEquals(element.getClass(), JsonObject.class);
-			Assertions.assertEquals(element, Map.of("", Map.of()));
+			Assertions.assertEquals(JsonObject.class, element.getClass());
+			Assertions.assertEquals(Map.of("", Map.of()), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -280,8 +284,8 @@ public class JsonifyLoadTest {
 	public void loadObjectDouble() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("{\"\":null,\"2\":null}"));
-			Assertions.assertEquals(element.getClass(), JsonObject.class);
-			Assertions.assertEquals(element, Map.of("", JsonPrimitive.NULL, "2", JsonPrimitive.NULL));
+			Assertions.assertEquals(JsonObject.class, element.getClass());
+			Assertions.assertEquals(Map.of("", JsonPrimitive.NULL, "2", JsonPrimitive.NULL), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -291,9 +295,9 @@ public class JsonifyLoadTest {
 	public void loadObjectTriple() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("{\"\":null,\"2\":null,\"3\":null}"));
-			Assertions.assertEquals(element.getClass(), JsonObject.class);
-			Assertions.assertEquals(element, Map.of("", JsonPrimitive.NULL, "2", JsonPrimitive.NULL,
-					"3", JsonPrimitive.NULL));
+			Assertions.assertEquals(JsonObject.class, element.getClass());
+			Assertions.assertEquals(Map.of("", JsonPrimitive.NULL, "2", JsonPrimitive.NULL,
+					"3", JsonPrimitive.NULL), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -305,9 +309,9 @@ public class JsonifyLoadTest {
 			final String input = String.join(WHITESPACES,
 					"", "{", "\"\"", ":", "null", ",", "\"2\"", ":", "null", ",", "\"3\"", ":", "null", "}", "");
 			final JsonElement element = Jsonify.load(new StringReader(input));
-			Assertions.assertEquals(element.getClass(), JsonObject.class);
-			Assertions.assertEquals(element, Map.of("", JsonPrimitive.NULL, "2", JsonPrimitive.NULL,
-					"3", JsonPrimitive.NULL));
+			Assertions.assertEquals(JsonObject.class, element.getClass());
+			Assertions.assertEquals(Map.of("", JsonPrimitive.NULL, "2", JsonPrimitive.NULL,
+					"3", JsonPrimitive.NULL), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -346,7 +350,7 @@ public class JsonifyLoadTest {
 	public void loadNull() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("null"));
-			Assertions.assertEquals(element, JsonPrimitive.NULL);
+			Assertions.assertEquals(JsonPrimitive.NULL, element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -356,7 +360,7 @@ public class JsonifyLoadTest {
 	public void loadTrue() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("true"));
-			Assertions.assertEquals(element, JsonPrimitive.TRUE);
+			Assertions.assertEquals(JsonPrimitive.TRUE, element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -366,7 +370,7 @@ public class JsonifyLoadTest {
 	public void loadFalse() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("false"));
-			Assertions.assertEquals(element, JsonPrimitive.FALSE);
+			Assertions.assertEquals(JsonPrimitive.FALSE, element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -395,7 +399,7 @@ public class JsonifyLoadTest {
 	public void loadStringEmpty() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("\"\""));
-			Assertions.assertEquals(element, new JsonString(""));
+			Assertions.assertEquals(new JsonString(""), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -407,9 +411,9 @@ public class JsonifyLoadTest {
 			final JsonElement element = Jsonify.load(new StringReader(
 					"\"ABCDEFGHIJKLMNOPQRSTUVWXYZ<>:{}abcdefghijklmnopqrstuvwxyz,.;'[]\\/`123456789-=~!@#$%^&*_+()" +
 							"\\r\\b\\n\\t\\f\\\\\u041A\u0BEA\u1050\u13BA\u17A2\u1F72\u235A\u2742\u2F12\u3050\u32FA\uA050\uA05A\uA442\\u4e2d\""));
-			Assertions.assertEquals(element, new JsonString(
+			Assertions.assertEquals(new JsonString(
 					"ABCDEFGHIJKLMNOPQRSTUVWXYZ<>:{}abcdefghijklmnopqrstuvwxyz,.;'[]/`123456789-=~!@#$%^&*_+()" +
-							"\r\b\n\t\f\\\u041A\u0BEA\u1050\u13BA\u17A2\u1F72\u235A\u2742\u2F12\u3050\u32FA\uA050\uA05A\uA442\u4e2d"));
+							"\r\b\n\t\f\\\u041A\u0BEA\u1050\u13BA\u17A2\u1F72\u235A\u2742\u2F12\u3050\u32FA\uA050\uA05A\uA442\u4e2d"), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -428,7 +432,7 @@ public class JsonifyLoadTest {
 	public void loadNumberIntegerSmall() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("0"));
-			Assertions.assertEquals(element, new JsonNumber(0));
+			Assertions.assertEquals(new JsonNumber(0), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -438,7 +442,7 @@ public class JsonifyLoadTest {
 	public void loadNumberIntegerBig() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("123456789012345678901234567890"));
-			Assertions.assertEquals(element, new JsonNumber(new BigInteger("123456789012345678901234567890")));
+			Assertions.assertEquals(new JsonNumber(new BigInteger("123456789012345678901234567890")), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -448,7 +452,7 @@ public class JsonifyLoadTest {
 	public void loadNumberIntegerNegative() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("-123456789012345678901234567890"));
-			Assertions.assertEquals(element, new JsonNumber(new BigInteger("-123456789012345678901234567890")));
+			Assertions.assertEquals(new JsonNumber(new BigInteger("-123456789012345678901234567890")), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -458,7 +462,7 @@ public class JsonifyLoadTest {
 	public void loadNumberDecimalFractionSmall() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("0.1"));
-			Assertions.assertEquals(element, new JsonNumber(0.1));
+			Assertions.assertEquals(new JsonNumber(0.1), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -468,7 +472,7 @@ public class JsonifyLoadTest {
 	public void loadNumberDecimalFractionBig() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("0.123456789012345678901234567890"));
-			Assertions.assertEquals(element, new JsonNumber(new BigDecimal("0.123456789012345678901234567890")));
+			Assertions.assertEquals(new JsonNumber(new BigDecimal("0.123456789012345678901234567890")), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -478,7 +482,7 @@ public class JsonifyLoadTest {
 	public void loadNumberDecimalFractionNegative() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("-0.123456789012345678901234567890"));
-			Assertions.assertEquals(element, new JsonNumber(new BigDecimal("-0.123456789012345678901234567890")));
+			Assertions.assertEquals(new JsonNumber(new BigDecimal("-0.123456789012345678901234567890")), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -488,7 +492,7 @@ public class JsonifyLoadTest {
 	public void loadNumberDecimalFractionTrailingZero() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("0.1000"));
-			Assertions.assertEquals(element, new JsonNumber(new BigDecimal("0.1000")));
+			Assertions.assertEquals(new JsonNumber(new BigDecimal("0.1000")), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -498,7 +502,7 @@ public class JsonifyLoadTest {
 	public void loadNumberDecimalFractionExponent() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("1.0e9"));
-			Assertions.assertEquals(element, new JsonNumber(new BigDecimal("1.0E+9")));
+			Assertions.assertEquals(new JsonNumber(new BigDecimal("1.0E+9")), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -508,7 +512,7 @@ public class JsonifyLoadTest {
 	public void loadNumberDecimalFractionTrailingZeroExponent() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("1.0000e9"));
-			Assertions.assertEquals(element, new JsonNumber(new BigDecimal("1.0000E+9")));
+			Assertions.assertEquals(new JsonNumber(new BigDecimal("1.0000E+9")), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -518,7 +522,7 @@ public class JsonifyLoadTest {
 	public void loadNumberDecimalExponent() throws IOException {
 		try {
 			final JsonElement element = Jsonify.load(new StringReader("1e9"));
-			Assertions.assertEquals(element, new JsonNumber(new BigDecimal("1E+9")));
+			Assertions.assertEquals(new JsonNumber(new BigDecimal("1E+9")), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -529,21 +533,5 @@ public class JsonifyLoadTest {
 	@Test
 	public void throwNumberExtra() {
 		Assertions.assertThrows(JsonException.class, () -> Jsonify.load(new StringReader("0,")));
-	}
-
-	// ====================
-
-	@Test
-	public void loadBigInput() throws IOException {
-		try (InputStream inputStream = JsonifyLoadTest.class.getResourceAsStream("testdata/large-file.json")) {
-			if (inputStream == null) Assertions.fail("Failed loading test resource!");
-			try (final Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
-				final JsonElement element = Jsonify.load(reader);
-				Assertions.assertInstanceOf(JsonArray.class, element);
-				Assertions.assertEquals(((JsonArray) element).size(), 11351);
-			} catch (final JsonException e) {
-				Assertions.fail(e);
-			}
-		}
 	}
 }

@@ -26,7 +26,6 @@ import java.util.Map;
 
 import static io.github.mrmathami.jsonify.JsonReader.TOKEN_ARRAY_BEGIN;
 import static io.github.mrmathami.jsonify.JsonReader.TOKEN_ARRAY_END;
-import static io.github.mrmathami.jsonify.JsonReader.TOKEN_EOF;
 import static io.github.mrmathami.jsonify.JsonReader.TOKEN_FALSE;
 import static io.github.mrmathami.jsonify.JsonReader.TOKEN_NAME;
 import static io.github.mrmathami.jsonify.JsonReader.TOKEN_NULL;

@@ -15,19 +15,22 @@
  * along with jsonify. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.mrmathami.jsonify;
+package io.github.mrmathami.jsonify.test;
 
+import io.github.mrmathami.jsonify.JsonArray;
+import io.github.mrmathami.jsonify.JsonException;
+import io.github.mrmathami.jsonify.JsonNumber;
+import io.github.mrmathami.jsonify.JsonObject;
+import io.github.mrmathami.jsonify.JsonPrimitive;
+import io.github.mrmathami.jsonify.JsonString;
+import io.github.mrmathami.jsonify.Jsonify;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
+import java.math.BigInteger;
 
 public class JsonifySaveTest {
 	@Test
@@ -36,7 +39,7 @@ public class JsonifySaveTest {
 			final StringWriter writer = new StringWriter();
 			final JsonArray element = new JsonArray();
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "[]");
+			Assertions.assertEquals("[]", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -49,7 +52,7 @@ public class JsonifySaveTest {
 			final JsonArray element = new JsonArray();
 			element.add(JsonPrimitive.NULL);
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "[null]");
+			Assertions.assertEquals("[null]", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -62,7 +65,7 @@ public class JsonifySaveTest {
 			final JsonArray element = new JsonArray();
 			element.add(JsonPrimitive.FALSE);
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "[false]");
+			Assertions.assertEquals("[false]", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -75,7 +78,7 @@ public class JsonifySaveTest {
 			final JsonArray element = new JsonArray();
 			element.add(JsonPrimitive.TRUE);
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "[true]");
+			Assertions.assertEquals("[true]", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -88,7 +91,7 @@ public class JsonifySaveTest {
 			final JsonArray element = new JsonArray();
 			element.add(new JsonString(""));
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "[\"\"]");
+			Assertions.assertEquals("[\"\"]", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -101,7 +104,7 @@ public class JsonifySaveTest {
 			final JsonArray element = new JsonArray();
 			element.add(new JsonNumber(0));
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "[0]");
+			Assertions.assertEquals("[0]", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -114,7 +117,7 @@ public class JsonifySaveTest {
 			final JsonArray element = new JsonArray();
 			element.add(new JsonArray());
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "[[]]");
+			Assertions.assertEquals("[[]]", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -127,7 +130,7 @@ public class JsonifySaveTest {
 			final JsonArray element = new JsonArray();
 			element.add(new JsonObject());
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "[{}]");
+			Assertions.assertEquals("[{}]", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -141,7 +144,7 @@ public class JsonifySaveTest {
 			element.add(JsonPrimitive.NULL);
 			element.add(JsonPrimitive.NULL);
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "[null,null]");
+			Assertions.assertEquals("[null,null]", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -156,7 +159,7 @@ public class JsonifySaveTest {
 			element.add(JsonPrimitive.NULL);
 			element.add(JsonPrimitive.NULL);
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "[null,null,null]");
+			Assertions.assertEquals("[null,null,null]", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -170,7 +173,7 @@ public class JsonifySaveTest {
 			final StringWriter writer = new StringWriter();
 			final JsonObject element = new JsonObject();
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "{}");
+			Assertions.assertEquals("{}", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -183,7 +186,7 @@ public class JsonifySaveTest {
 			final JsonObject element = new JsonObject();
 			element.put("", JsonPrimitive.NULL);
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "{\"\":null}");
+			Assertions.assertEquals("{\"\":null}", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -196,7 +199,7 @@ public class JsonifySaveTest {
 			final JsonObject element = new JsonObject();
 			element.put("", JsonPrimitive.FALSE);
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "{\"\":false}");
+			Assertions.assertEquals("{\"\":false}", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -209,7 +212,7 @@ public class JsonifySaveTest {
 			final JsonObject element = new JsonObject();
 			element.put("", JsonPrimitive.TRUE);
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "{\"\":true}");
+			Assertions.assertEquals("{\"\":true}", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -222,7 +225,7 @@ public class JsonifySaveTest {
 			final JsonObject element = new JsonObject();
 			element.put("", new JsonString(""));
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "{\"\":\"\"}");
+			Assertions.assertEquals("{\"\":\"\"}", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -235,7 +238,7 @@ public class JsonifySaveTest {
 			final JsonObject element = new JsonObject();
 			element.put("", new JsonNumber(0));
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "{\"\":0}");
+			Assertions.assertEquals("{\"\":0}", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -248,7 +251,7 @@ public class JsonifySaveTest {
 			final JsonObject element = new JsonObject();
 			element.put("", new JsonArray());
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "{\"\":[]}");
+			Assertions.assertEquals("{\"\":[]}", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -261,7 +264,7 @@ public class JsonifySaveTest {
 			final JsonObject element = new JsonObject();
 			element.put("", new JsonObject());
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "{\"\":{}}");
+			Assertions.assertEquals("{\"\":{}}", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -275,7 +278,7 @@ public class JsonifySaveTest {
 			element.put("", JsonPrimitive.NULL);
 			element.put("2", JsonPrimitive.NULL);
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "{\"\":null,\"2\":null}");
+			Assertions.assertEquals("{\"\":null,\"2\":null}", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -290,7 +293,7 @@ public class JsonifySaveTest {
 			element.put("2", JsonPrimitive.NULL);
 			element.put("3", JsonPrimitive.NULL);
 			Jsonify.save(writer, element);
-			Assertions.assertEquals(writer.toString(), "{\"\":null,\"2\":null,\"3\":null}");
+			Assertions.assertEquals("{\"\":null,\"2\":null,\"3\":null}", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -303,7 +306,7 @@ public class JsonifySaveTest {
 		try {
 			final StringWriter writer = new StringWriter();
 			Jsonify.save(writer, JsonPrimitive.NULL);
-			Assertions.assertEquals(writer.toString(), "null");
+			Assertions.assertEquals("null", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -314,7 +317,7 @@ public class JsonifySaveTest {
 		try {
 			final StringWriter writer = new StringWriter();
 			Jsonify.save(writer, JsonPrimitive.TRUE);
-			Assertions.assertEquals(writer.toString(), "true");
+			Assertions.assertEquals("true", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -325,7 +328,7 @@ public class JsonifySaveTest {
 		try {
 			final StringWriter writer = new StringWriter();
 			Jsonify.save(writer, JsonPrimitive.FALSE);
-			Assertions.assertEquals(writer.toString(), "false");
+			Assertions.assertEquals("false", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -338,7 +341,7 @@ public class JsonifySaveTest {
 		try {
 			final StringWriter writer = new StringWriter();
 			Jsonify.save(writer, new JsonString(""));
-			Assertions.assertEquals(writer.toString(), "\"\"");
+			Assertions.assertEquals("\"\"", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -351,9 +354,9 @@ public class JsonifySaveTest {
 			Jsonify.save(writer, new JsonString(
 					"ABCDEFGHIJKLMNOPQRSTUVWXYZ<>:{}abcdefghijklmnopqrstuvwxyz,.;'[]/`123456789-=~!@#$%^&*_+()" +
 							"\r\b\n\t\f\\\u041A\u0BEA\u1050\u13BA\u17A2\u1F72\u235A\u2742\u2F12\u3050\u32FA\uA050\uA05A\uA442\u4E2D"));
-			Assertions.assertEquals(writer.toString(),
-					"\"ABCDEFGHIJKLMNOPQRSTUVWXYZ<>:{}abcdefghijklmnopqrstuvwxyz,.;'[]/`123456789-=~!@#$%^&*_+()" +
-							"\\r\\b\\n\\t\\f\\\\\u041A\u0BEA\u1050\u13BA\u17A2\u1F72\u235A\u2742\u2F12\u3050\u32FA\uA050\uA05A\uA442\u4E2D\"");
+			Assertions.assertEquals("\"ABCDEFGHIJKLMNOPQRSTUVWXYZ<>:{}abcdefghijklmnopqrstuvwxyz,.;'[]/`123456789-=~!@#$%^&*_+()" +
+							"\\r\\b\\n\\t\\f\\\\\u041A\u0BEA\u1050\u13BA\u17A2\u1F72\u235A\u2742\u2F12\u3050\u32FA\uA050\uA05A\uA442\u4E2D\"",
+					writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -366,7 +369,7 @@ public class JsonifySaveTest {
 		try {
 			final StringWriter writer = new StringWriter();
 			Jsonify.save(writer, new JsonNumber(Integer.MAX_VALUE));
-			Assertions.assertEquals(writer.toString(), String.valueOf(Integer.MAX_VALUE));
+			Assertions.assertEquals(String.valueOf(Integer.MAX_VALUE), writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -377,7 +380,7 @@ public class JsonifySaveTest {
 		try {
 			final StringWriter writer = new StringWriter();
 			Jsonify.save(writer, new JsonNumber(Long.MAX_VALUE));
-			Assertions.assertEquals(writer.toString(), String.valueOf(Long.MAX_VALUE));
+			Assertions.assertEquals(String.valueOf(Long.MAX_VALUE), writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -387,8 +390,8 @@ public class JsonifySaveTest {
 	public void saveNumberIntegerBig() throws IOException {
 		try {
 			final StringWriter writer = new StringWriter();
-			Jsonify.save(writer, new JsonNumber("123456789012345678901234567890"));
-			Assertions.assertEquals(writer.toString(), "123456789012345678901234567890");
+			Jsonify.save(writer, new JsonNumber(new BigInteger("123456789012345678901234567890")));
+			Assertions.assertEquals("123456789012345678901234567890", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -398,8 +401,8 @@ public class JsonifySaveTest {
 	public void saveNumberDecimalFractionSmall() throws IOException {
 		try {
 			final StringWriter writer = new StringWriter();
-			Jsonify.save(writer, new JsonNumber("0.1"));
-			Assertions.assertEquals(writer.toString(), "0.1");
+			Jsonify.save(writer, new JsonNumber(new BigDecimal("0.1")));
+			Assertions.assertEquals("0.1", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -409,8 +412,8 @@ public class JsonifySaveTest {
 	public void saveNumberDecimalFractionBig() throws IOException {
 		try {
 			final StringWriter writer = new StringWriter();
-			Jsonify.save(writer, new JsonNumber("0.12345678901234567890"));
-			Assertions.assertEquals(writer.toString(), "0.12345678901234567890");
+			Jsonify.save(writer, new JsonNumber(new BigDecimal("0.12345678901234567890")));
+			Assertions.assertEquals("0.12345678901234567890", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -420,8 +423,8 @@ public class JsonifySaveTest {
 	public void saveNumberDecimalFractionTrailingZero() throws IOException {
 		try {
 			final StringWriter writer = new StringWriter();
-			Jsonify.save(writer, new JsonNumber("0.1000"));
-			Assertions.assertEquals(writer.toString(), "0.1000");
+			Jsonify.save(writer, new JsonNumber(new BigDecimal("0.1000")));
+			Assertions.assertEquals("0.1000", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -431,8 +434,8 @@ public class JsonifySaveTest {
 	public void saveNumberDecimalFractionExponent() throws IOException {
 		try {
 			final StringWriter writer = new StringWriter();
-			Jsonify.save(writer, new JsonNumber("1.0e9"));
-			Assertions.assertEquals(writer.toString(), "1.0E+9");
+			Jsonify.save(writer, new JsonNumber(new BigDecimal("1.0e9")));
+			Assertions.assertEquals("1.0E+9", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -442,8 +445,8 @@ public class JsonifySaveTest {
 	public void saveNumberDecimalFractionTrailingZeroExponent() throws IOException {
 		try {
 			final StringWriter writer = new StringWriter();
-			Jsonify.save(writer, new JsonNumber("1.0000e9"));
-			Assertions.assertEquals(writer.toString(), "1.0000E+9");
+			Jsonify.save(writer, new JsonNumber(new BigDecimal("1.0000e9")));
+			Assertions.assertEquals("1.0000E+9", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -453,8 +456,8 @@ public class JsonifySaveTest {
 	public void saveNumberDecimalExponent() throws IOException {
 		try {
 			final StringWriter writer = new StringWriter();
-			Jsonify.save(writer, new JsonNumber("1e9"));
-			Assertions.assertEquals(writer.toString(), "1E+9");
+			Jsonify.save(writer, new JsonNumber(new BigDecimal("1e9")));
+			Assertions.assertEquals("1E+9", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
