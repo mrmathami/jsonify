@@ -80,7 +80,7 @@
 						<addMavenDescriptor>false</addMavenDescriptor>
 					</archive>
 					<options>
-						<option>-keepattributes Exceptions</option>
+						<option>-keepattributes Exceptions,Signature</option>
 						<option>-keep public class * { public *; }</option>
 						<option>-keep public interface * { public *; }</option>
 						<option>-keep public enum * { public *; }</option>

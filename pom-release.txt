@@ -5,7 +5,7 @@
 
 	<groupId>io.github.mrmathami</groupId>
 	<artifactId>jsonify</artifactId>
-	<version>1.0.1-beta</version>
+	<version>1.0.2-beta</version>
 	<packaging>jar</packaging>
 
 	<name>jsonify</name>
