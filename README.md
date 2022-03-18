@@ -1,5 +1,5 @@
-
 # jsonify
+
 JSON reader/writer library. Currently, it is in Beta stage. The API should not change from now on, but if it has to be
 changed, a major release will be created.
 
@@ -56,4 +56,5 @@ ability to skip the rest of the content of an array or an object you are reading
 LGPL v3 or any later version
 
 ## Found a bug?
+
 Feel free to open an issue.
