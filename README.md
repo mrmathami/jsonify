@@ -41,7 +41,7 @@ number parser kick in. Otherwise, `JsonNumber` can be counted as immutable as it
 
 If you want more control on the reader or the writer, you can use `JsonReader` and `JsonWriter` directly to load and
 save JSON from and to your own data structure. Moreover, when using `JsonReader` instead of `Jsonify::load`, you have
-ability to skip the rest of the content of an array or an object you are reading on, thus same times and memory.
+ability to skip the rest of the content of an array or an object you are reading on, thus save times and memory.
 
 ## Todo
 
