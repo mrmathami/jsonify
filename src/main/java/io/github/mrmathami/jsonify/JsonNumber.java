@@ -173,7 +173,7 @@ public final class JsonNumber extends Number implements JsonElement {
 	 * expensive operator!
 	 */
 	public long longValueExact() {
-		if (value instanceof Long) return value.longValue();
+		if (value instanceof Integer || value instanceof Long) return value.longValue();
 		final Number bigValue = bigValue();
 		if (bigValue instanceof BigInteger) {
 			return ((BigInteger) bigValue).longValueExact();
@@ -215,7 +215,7 @@ public final class JsonNumber extends Number implements JsonElement {
 	 * expensive operator!
 	 */
 	public double doubleValueExact() {
-		if (value instanceof Double) return value.doubleValue();
+		if (value instanceof Integer || value instanceof Float || value instanceof Double) return value.doubleValue();
 		final Number bigValue = bigValue();
 		final double doubleValue = bigValue.doubleValue();
 		try {
