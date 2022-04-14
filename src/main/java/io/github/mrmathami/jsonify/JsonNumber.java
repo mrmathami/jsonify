@@ -138,6 +138,7 @@ public final class JsonNumber extends Number implements JsonElement {
 	}
 
 	/**
+	 * Note: There is no "toBigDecimalExact" because {@link BigDecimal} is supposed to be able to hold any number!
 	 * WARNING: This is an expensive operator!
 	 */
 	public @NotNull BigDecimal toBigDecimal() {
@@ -249,13 +250,6 @@ public final class JsonNumber extends Number implements JsonElement {
 		} else {
 			throw new AssertionError();
 		}
-	}
-
-	/**
-	 * Never throws anything, fully equals to {@link #toBigDecimal()}. WARNING: This is an  expensive operator!
-	 */
-	public @NotNull BigDecimal toBigDecimalExact() {
-		return toBigDecimal();
 	}
 
 
