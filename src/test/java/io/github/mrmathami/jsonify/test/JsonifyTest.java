@@ -35,7 +35,7 @@ import java.nio.charset.StandardCharsets;
 public class JsonifyTest {
 	@Test
 	public void bigInput() throws IOException {
-		try (final InputStream inputStream = JsonifyLoadTest.class.getResourceAsStream("large-file.json")) {
+		try (final InputStream inputStream = JsonifyTest.class.getResourceAsStream("large-file.json")) {
 			if (inputStream == null) Assertions.fail("Failed loading test resource!");
 			try (final Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
 				final JsonElement element = Jsonify.load(reader);

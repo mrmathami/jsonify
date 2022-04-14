@@ -299,7 +299,7 @@ public class JsonWriter implements Closeable {
 	 * Write a number value. Throw JsonException if it is not expected.
 	 */
 	public void valueNumber(@NotNull JsonNumber value) throws IOException, JsonException {
-		writeValueRaw(value.toStringLazy());
+		writeValueRaw(value.toString());
 	}
 
 	/**

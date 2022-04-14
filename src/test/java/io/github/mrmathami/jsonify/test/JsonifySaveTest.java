@@ -401,8 +401,19 @@ public class JsonifySaveTest {
 	public void saveNumberDecimalFractionSmall() throws IOException {
 		try {
 			final StringWriter writer = new StringWriter();
-			Jsonify.save(writer, new JsonNumber(new BigDecimal("0.1")));
-			Assertions.assertEquals("0.1", writer.toString());
+			Jsonify.save(writer, new JsonNumber(0.12345678f));
+			Assertions.assertEquals("0.12345678", writer.toString());
+		} catch (final JsonException e) {
+			Assertions.fail(e);
+		}
+	}
+
+	@Test
+	public void saveNumberDecimalFractionMedium() throws IOException {
+		try {
+			final StringWriter writer = new StringWriter();
+			Jsonify.save(writer, new JsonNumber(0.12345678912345678));
+			Assertions.assertEquals("0.12345678912345678", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -462,5 +473,4 @@ public class JsonifySaveTest {
 			Assertions.fail(e);
 		}
 	}
-
 }

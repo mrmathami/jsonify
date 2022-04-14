@@ -461,8 +461,18 @@ public class JsonifyLoadTest {
 	@Test
 	public void loadNumberDecimalFractionSmall() throws IOException {
 		try {
-			final JsonElement element = Jsonify.load(new StringReader("0.1"));
-			Assertions.assertEquals(new JsonNumber(0.1), element);
+			final JsonElement element = Jsonify.load(new StringReader("0.12345678"));
+			Assertions.assertEquals(new JsonNumber(0.12345678f), element);
+		} catch (final JsonException e) {
+			Assertions.fail(e);
+		}
+	}
+
+	@Test
+	public void loadNumberDecimalFractionMedium() throws IOException {
+		try {
+			final JsonElement element = Jsonify.load(new StringReader("0.12345678912345678"));
+			Assertions.assertEquals(new JsonNumber(0.12345678912345678), element);
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
