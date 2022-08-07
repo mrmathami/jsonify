@@ -401,7 +401,7 @@ public class JsonifySaveTest {
 	public void saveNumberDecimalFractionSmall() throws IOException {
 		try {
 			final StringWriter writer = new StringWriter();
-			Jsonify.save(writer, new JsonNumber(0.12345678f));
+			Jsonify.save(writer, new JsonNumber(0.12345678));
 			Assertions.assertEquals("0.12345678", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
@@ -435,7 +435,7 @@ public class JsonifySaveTest {
 		try {
 			final StringWriter writer = new StringWriter();
 			Jsonify.save(writer, new JsonNumber(new BigDecimal("0.1000")));
-			Assertions.assertEquals("0.1000", writer.toString());
+			Assertions.assertEquals("0.1", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -446,7 +446,7 @@ public class JsonifySaveTest {
 		try {
 			final StringWriter writer = new StringWriter();
 			Jsonify.save(writer, new JsonNumber(new BigDecimal("1.0e9")));
-			Assertions.assertEquals("1.0E+9", writer.toString());
+			Assertions.assertEquals("1.0E9", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -457,7 +457,7 @@ public class JsonifySaveTest {
 		try {
 			final StringWriter writer = new StringWriter();
 			Jsonify.save(writer, new JsonNumber(new BigDecimal("1.0000e9")));
-			Assertions.assertEquals("1.0000E+9", writer.toString());
+			Assertions.assertEquals("1.0E9", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
@@ -468,7 +468,7 @@ public class JsonifySaveTest {
 		try {
 			final StringWriter writer = new StringWriter();
 			Jsonify.save(writer, new JsonNumber(new BigDecimal("1e9")));
-			Assertions.assertEquals("1E+9", writer.toString());
+			Assertions.assertEquals("1.0E9", writer.toString());
 		} catch (final JsonException e) {
 			Assertions.fail(e);
 		}
