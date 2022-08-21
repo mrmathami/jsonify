@@ -31,7 +31,7 @@ public final class JsonPrimitive implements JsonElement {
 		this.string = string;
 	}
 
-	private static JsonPrimitive of(@Nullable Object object) {
+	public static JsonPrimitive of(@Nullable Object object) {
 		if (object == null) return NULL;
 		if (object == Boolean.TRUE) return TRUE;
 		if (object == Boolean.FALSE) return FALSE;
@@ -39,7 +39,7 @@ public final class JsonPrimitive implements JsonElement {
 		throw new IllegalArgumentException();
 	}
 
-	private static JsonPrimitive of(boolean bool) {
+	public static JsonPrimitive of(boolean bool) {
 		return bool ? TRUE : FALSE;
 	}
 
