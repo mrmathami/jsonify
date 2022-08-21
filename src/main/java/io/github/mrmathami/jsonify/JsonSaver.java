@@ -95,7 +95,7 @@ final class JsonSaver extends JsonWriter {
 				throw new AssertionError();
 			}
 		} else {
-			throw new AssertionError();
+			throw new JsonException("Unknown element type!");
 		}
 	}
 }
