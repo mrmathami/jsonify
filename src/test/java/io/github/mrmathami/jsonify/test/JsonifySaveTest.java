@@ -302,6 +302,41 @@ public class JsonifySaveTest {
 	// ====================
 
 	@Test
+	public void saveArrayRecursive() {
+		Assertions.assertThrows(JsonException.class, () -> {
+			final JsonArray arrayA = new JsonArray();
+			final JsonArray arrayB = new JsonArray();
+			arrayA.add(arrayB);
+			arrayB.add(arrayA);
+			Jsonify.save(new StringWriter(), arrayA);
+		});
+	}
+
+	@Test
+	public void saveObjectRecursive() {
+		Assertions.assertThrows(JsonException.class, () -> {
+			final JsonObject objectA = new JsonObject();
+			final JsonObject objectB = new JsonObject();
+			objectA.put("", objectB);
+			objectB.put("", objectA);
+			Jsonify.save(new StringWriter(), objectA);
+		});
+	}
+
+	@Test
+	public void saveArrayObjectRecursive() {
+		Assertions.assertThrows(JsonException.class, () -> {
+			final JsonArray array = new JsonArray();
+			final JsonObject object = new JsonObject();
+			array.add(object);
+			object.put("", array);
+			Jsonify.save(new StringWriter(), object);
+		});
+	}
+
+	// ====================
+
+	@Test
 	public void saveNull() throws IOException {
 		try {
 			final StringWriter writer = new StringWriter();

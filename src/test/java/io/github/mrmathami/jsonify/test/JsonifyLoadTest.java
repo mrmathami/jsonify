@@ -344,6 +344,26 @@ public class JsonifyLoadTest {
 		Assertions.assertThrows(JsonException.class, () -> Jsonify.load(new StringReader("{\"\":null,}")));
 	}
 
+	@Test
+	public void throwObjectIncompleteNoColon() {
+		Assertions.assertThrows(JsonException.class, () -> Jsonify.load(new StringReader("{\"\"")));
+	}
+
+	@Test
+	public void throwObjectIncompleteNoValue() {
+		Assertions.assertThrows(JsonException.class, () -> Jsonify.load(new StringReader("{\"\":")));
+	}
+
+	@Test
+	public void throwObjectIncompleteNoComma() {
+		Assertions.assertThrows(JsonException.class, () -> Jsonify.load(new StringReader("{\"\":null")));
+	}
+
+	@Test
+	public void throwObjectIncompleteNoClose() {
+		Assertions.assertThrows(JsonException.class, () -> Jsonify.load(new StringReader("{\"\":null,")));
+	}
+
 	// ====================
 
 	@Test
