@@ -30,23 +30,19 @@ import java.util.BitSet;
  * JSON writer.
  */
 public class JsonWriter implements Closeable {
+	/**
+	 * The output writer.
+	 */
 	private final @NotNull Writer writer;
 
 	/**
-	 * JSON writer constructor.
+	 * Creates a json writer.
 	 */
 	public JsonWriter(@NotNull Writer writer) {
 		this.writer = writer;
 	}
 
 	//========================================
-
-	/**
-	 * Checks to make sure that the stream has not been closed
-	 */
-	private void ensureOpen() throws IOException {
-		if (state == STATE_CLOSED) throw new IOException("Already closed!");
-	}
 
 	/**
 	 * Close the JSON writer, also close the underlying writer.
