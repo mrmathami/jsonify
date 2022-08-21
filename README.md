@@ -1,6 +1,6 @@
 # jsonify
 
-JSON reader/writer library. Currently, it is in Beta stage. The API is considered stable and should not be changed from now on. Still, in a rare case that it has to change, a major release will be created.
+JSON reader/writer library. Currently, it is in production-ready stage. The API is stable, any change will come with proper deprecation and deprecation for removal notice at least 1 year before the removal of any API.
 
 ## Goal
 
@@ -30,6 +30,8 @@ There are a few type of `JsonElement`:
 - `JsonPrimitive` for boolean and null.
 
 `JsonArray` and `JsonObject` are mutable, `JsonString`, `JsonNumber` and `JsonPrimitive` are immutable.
+
+Note that `Jsonify.save(writer, element)` do check for recursive references and will throw `JsonException` in that case.
 
 ### Low level usage
 
