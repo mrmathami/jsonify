@@ -57,15 +57,15 @@ final class JsonSaver extends JsonWriter {
 			valueNumber((JsonNumber) element);
 		} else if (element instanceof JsonString) {
 			valueString(element.toString());
-		} else if (element instanceof JsonPrimitive) {
-			if (element == JsonPrimitive.TRUE) {
+		} else if (element instanceof JsonKeyword) {
+			if (element == JsonKeyword.TRUE) {
 				valueBoolean(true);
-			} else if (element == JsonPrimitive.FALSE) {
+			} else if (element == JsonKeyword.FALSE) {
 				valueBoolean(false);
-			} else if (element == JsonPrimitive.NULL) {
+			} else if (element == JsonKeyword.NULL) {
 				valueNull();
 			} else {
-				throw new AssertionError();
+				throw new AssertionError("Unknown keyword!");
 			}
 		} else if (element instanceof JsonArray) {
 			final JsonArray array = (JsonArray) element;

@@ -35,7 +35,7 @@ final class JsonLoader extends JsonReader {
 	 */
 	static @NotNull JsonElement load(@NotNull Reader reader) throws IOException, JsonException {
 		try (final JsonLoader loader = new JsonLoader(reader)) {
-			final JsonElement value = loader.nextValue(loader.nextToken());
+			final JsonElement value = loader.read(loader.nextToken());
 			loader.nextToken();
 			return value;
 		}
@@ -44,60 +44,48 @@ final class JsonLoader extends JsonReader {
 	/**
 	 * Get next value from input JSON.
 	 */
-	private @NotNull JsonElement nextValue(int token) throws IOException, JsonException {
+	private @NotNull JsonElement read(int token) throws IOException, JsonException {
 		switch (token) {
-			case TOKEN_ARRAY_BEGIN:
-				return getArray();
-			case TOKEN_OBJECT_BEGIN:
-				return getObject();
+			case TOKEN_ARRAY_BEGIN: {
+				// already inside array
+				final JsonArray array = new JsonArray();
+				while (true) {
+					final int value = nextToken();
+					if (value != TOKEN_ARRAY_END) {
+						array.add(read(value));
+					} else {
+						endStructure();
+						return array;
+					}
+				}
+			}
+			case TOKEN_OBJECT_BEGIN: {
+				// already inside object
+				final JsonObject object = new JsonObject();
+				while (true) {
+					final int name = nextToken();
+					if (name == TOKEN_NAME) {
+						object.put(getString(), read(nextToken()));
+					} else if (name == TOKEN_OBJECT_END) {
+						endStructure();
+						return object;
+					} else {
+						throw new AssertionError();
+					}
+				}
+			}
 			case TOKEN_STRING:
 				return new JsonString(getString());
 			case TOKEN_NUMBER:
 				return getNumber();
 			case TOKEN_TRUE:
-				return JsonPrimitive.TRUE;
+				return JsonKeyword.TRUE;
 			case TOKEN_FALSE:
-				return JsonPrimitive.FALSE;
+				return JsonKeyword.FALSE;
 			case TOKEN_NULL:
-				return JsonPrimitive.NULL;
+				return JsonKeyword.NULL;
 			default:
-				throw new AssertionError();
-		}
-	}
-
-	/**
-	 * Get array from input JSON.
-	 */
-	private @NotNull JsonArray getArray() throws IOException, JsonException {
-		// already inside array
-		final JsonArray array = new JsonArray();
-		while (true) {
-			final int value = nextToken();
-			if (value != TOKEN_ARRAY_END) {
-				array.add(nextValue(value));
-			} else {
-				endStructure();
-				return array;
-			}
-		}
-	}
-
-	/**
-	 * Get object from input JSON.
-	 */
-	private @NotNull JsonObject getObject() throws IOException, JsonException {
-		// already inside object
-		final JsonObject object = new JsonObject();
-		while (true) {
-			final int name = nextToken();
-			if (name == TOKEN_NAME) {
-				object.put(getString(), nextValue(nextToken()));
-			} else if (name == TOKEN_OBJECT_END) {
-				endStructure();
-				return object;
-			} else {
-				throw new AssertionError();
-			}
+				throw new AssertionError("Unknown/unexpected token!");
 		}
 	}
 }

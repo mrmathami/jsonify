@@ -27,9 +27,9 @@ There are a few type of `JsonElement`:
 - `JsonObject` for object.
 - `JsonString` for string.
 - `JsonNumber` for number.
-- `JsonPrimitive` for boolean and null.
+- `JsonKeyword` for boolean and null.
 
-`JsonArray` and `JsonObject` are mutable, `JsonString`, `JsonNumber` and `JsonPrimitive` are immutable.
+`JsonArray` and `JsonObject` are mutable, `JsonString`, `JsonNumber` and `JsonKeyword` are immutable.
 
 Note that `Jsonify.save(writer, element)` do check for recursive references and will throw `JsonException` in that case.
 
