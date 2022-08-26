@@ -90,6 +90,10 @@ public final class JsonNumber extends Number implements JsonElement {
 		return value instanceof BigDecimal || value instanceof Double;
 	}
 
+	public boolean isBig() {
+		return value instanceof BigInteger || value instanceof BigDecimal;
+	}
+
 	public @NotNull Number getValue() {
 		return value;
 	}
