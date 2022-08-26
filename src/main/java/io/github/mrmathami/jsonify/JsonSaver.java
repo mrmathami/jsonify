@@ -25,7 +25,7 @@ import java.io.Writer;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-final class JsonSaver extends JsonWriter {
+public final class JsonSaver extends JsonWriter {
 	/**
 	 * The active element stack, use to detect recursive write of the same element.
 	 */
@@ -42,7 +42,7 @@ final class JsonSaver extends JsonWriter {
 	/**
 	 * Save JSON element to output json.
 	 */
-	static void save(@NotNull Writer writer, @NotNull JsonElement element) throws IOException, JsonException {
+	public static void save(@NotNull Writer writer, @NotNull JsonElement element) throws IOException, JsonException {
 		try (final JsonSaver saver = new JsonSaver(writer, true)) {
 			saver.write(element);
 			if (!saver.isDone()) throw new AssertionError(); // safeguard

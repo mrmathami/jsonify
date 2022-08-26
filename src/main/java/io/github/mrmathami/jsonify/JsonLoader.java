@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.io.Reader;
 
-final class JsonLoader extends JsonReader {
+public final class JsonLoader extends JsonReader {
 	/**
 	 * Creates a json loader.
 	 */
@@ -33,7 +33,7 @@ final class JsonLoader extends JsonReader {
 	/**
 	 * Load input json to JSON element.
 	 */
-	static @NotNull JsonElement load(@NotNull Reader reader) throws IOException, JsonException {
+	public static @NotNull JsonElement load(@NotNull Reader reader) throws IOException, JsonException {
 		try (final JsonLoader loader = new JsonLoader(reader)) {
 			final JsonElement value = loader.read(loader.nextToken());
 			loader.nextToken();
