@@ -18,16 +18,29 @@
 package io.github.mrmathami.jsonify;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public final class JsonPrimitive implements JsonElement {
-	public static final @NotNull JsonPrimitive TRUE = new JsonPrimitive("true");
-	public static final @NotNull JsonPrimitive FALSE = new JsonPrimitive("false");
-	public static final @NotNull JsonPrimitive NULL = new JsonPrimitive("null");
+public final class JsonKeyword implements JsonElement {
+	public static final @NotNull JsonKeyword TRUE = new JsonKeyword("true");
+	public static final @NotNull JsonKeyword FALSE = new JsonKeyword("false");
+	public static final @NotNull JsonKeyword NULL = new JsonKeyword("null");
 
 	private final @NotNull String string;
 
-	private JsonPrimitive(@NotNull String string) {
+	private JsonKeyword(@NotNull String string) {
 		this.string = string;
+	}
+
+	public static JsonKeyword of(@Nullable Object object) {
+		if (object == null) return NULL;
+		if (object == Boolean.TRUE) return TRUE;
+		if (object == Boolean.FALSE) return FALSE;
+		if (object instanceof JsonKeyword) return (JsonKeyword) object;
+		throw new IllegalArgumentException();
+	}
+
+	public static JsonKeyword of(boolean bool) {
+		return bool ? TRUE : FALSE;
 	}
 
 	@Override

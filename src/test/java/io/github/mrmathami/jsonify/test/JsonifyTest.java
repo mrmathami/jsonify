@@ -20,7 +20,8 @@ package io.github.mrmathami.jsonify.test;
 import io.github.mrmathami.jsonify.JsonArray;
 import io.github.mrmathami.jsonify.JsonElement;
 import io.github.mrmathami.jsonify.JsonException;
-import io.github.mrmathami.jsonify.Jsonify;
+import io.github.mrmathami.jsonify.JsonLoader;
+import io.github.mrmathami.jsonify.JsonSaver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -35,16 +36,16 @@ import java.nio.charset.StandardCharsets;
 public class JsonifyTest {
 	@Test
 	public void bigInput() throws IOException {
-		try (final InputStream inputStream = JsonifyLoadTest.class.getResourceAsStream("large-file.json")) {
+		try (final InputStream inputStream = JsonifyTest.class.getResourceAsStream("large-file.json")) {
 			if (inputStream == null) Assertions.fail("Failed loading test resource!");
 			try (final Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
-				final JsonElement element = Jsonify.load(reader);
+				final JsonElement element = JsonLoader.load(reader);
 				Assertions.assertEquals(element.getClass(), JsonArray.class);
 				Assertions.assertEquals(11351, ((JsonArray) element).size());
 				final StringWriter writer = new StringWriter();
-				Jsonify.save(writer, element);
+				JsonSaver.save(writer, element);
 				final StringReader anotherReader = new StringReader(writer.toString());
-				final JsonElement anotherElement = Jsonify.load(anotherReader);
+				final JsonElement anotherElement = JsonLoader.load(anotherReader);
 				Assertions.assertEquals(element, anotherElement);
 			} catch (final JsonException e) {
 				Assertions.fail(e);

@@ -24,62 +24,116 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
- * Json number. Can be lazy parsed if came from the reader.
+ * JSON number. Note that JSON standard doesn't allow NaN and Infinity.
  */
-public final class JsonNumber implements JsonElement {
-	private @NotNull Object value;
+public final class JsonNumber extends Number implements JsonElement {
+	/**
+	 * If able, {@link Long} or {@link Double} type without losing precision.
+	 */
+	private final @NotNull Number value;
 
-	public JsonNumber(int value) {
-		this.value = value;
-	}
 
 	public JsonNumber(long value) {
 		this.value = value;
 	}
 
-	public JsonNumber(float value) {
-		this.value = value;
-	}
-
+	/**
+	 * Throws {@link NumberFormatException} when {@code value} is NaN, +Infinity or -Infinity.
+	 */
 	public JsonNumber(double value) {
-		this.value = value;
-	}
-
-	public JsonNumber(@NotNull BigDecimal value) {
-		this.value = value;
+		if (Double.isFinite(value)) {
+			this.value = value;
+		} else {
+			throw new NumberFormatException("JSON number cannot be NaN or Infinity.");
+		}
 	}
 
 	public JsonNumber(@NotNull BigInteger value) {
-		this.value = value;
+		this.value = tryIntegerToLong(value);
 	}
 
-	JsonNumber(@NotNull String string) {
-		this.value = string;
+	public JsonNumber(@NotNull BigDecimal value) {
+		this.value = tryDecimalToPrimitive(value);
 	}
 
-	public @NotNull Number toNumber() {
-		if (value instanceof Number) return (Number) value;
-		final BigDecimal decimal = new BigDecimal(value.toString());
-		this.value = decimal;
+
+	private static @NotNull Number tryIntegerToLong(@NotNull BigInteger integer) {
+		try {
+			return integer.longValueExact();
+		} catch (final ArithmeticException ignored) {
+		}
+		return integer;
+	}
+
+	private static @NotNull Number tryDecimalToPrimitive(@NotNull BigDecimal decimal) {
+		final int precision = decimal.precision();
+		final int scale = decimal.scale();
+		// double is precision(15..17) scale[-1022;1023]
+		if (precision <= 17 && scale >= -1022 && scale <= 1023) {
+			final String formatString = "%." + precision + 'e';
+			final double doubleValue = decimal.doubleValue();
+			if (Double.isFinite(doubleValue)) {
+				final String doubleString = String.format(formatString, doubleValue);
+				final String decimalString = String.format(formatString, decimal);
+				if (doubleString.equals(decimalString)) return doubleValue;
+			}
+		}
 		return decimal;
 	}
 
-	@NotNull String toStringLazy() {
-		return value.toString();
+
+	public boolean isInteger() {
+		return value instanceof BigInteger || value instanceof Long;
+	}
+
+	public boolean isDecimal() {
+		return value instanceof BigDecimal || value instanceof Double;
+	}
+
+	public boolean isBig() {
+		return value instanceof BigInteger || value instanceof BigDecimal;
+	}
+
+	public @NotNull Number getValue() {
+		return value;
+	}
+
+
+	@Override
+	public int intValue() {
+		return value.intValue();
+	}
+
+	@Override
+	public long longValue() {
+		return value.longValue();
+	}
+
+	@Override
+	public float floatValue() {
+		return value.floatValue();
+	}
+
+	@Override
+	public double doubleValue() {
+		return value.doubleValue();
 	}
 
 	@Override
 	public @NotNull String toString() {
-		return toNumber().toString();
+		return value.toString();
 	}
 
 	@Override
 	public boolean equals(@Nullable Object object) {
-		return this == object || object instanceof JsonNumber && toString().equals(object.toString());
+		if (this == object) return true;
+		if (!(object instanceof JsonNumber)) return false;
+		final JsonNumber number = (JsonNumber) object;
+		return value.equals(number.value);
 	}
 
 	@Override
 	public int hashCode() {
-		return toNumber().hashCode();
+		return value.hashCode();
 	}
 }
