@@ -18,7 +18,6 @@
 package io.github.mrmathami.jsonify;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -29,22 +28,21 @@ public final class JsonSaver extends JsonWriter {
 	/**
 	 * The active element stack, use to detect recursive write of the same element.
 	 */
-	private final @Nullable Map<@NotNull JsonElement, @NotNull JsonElement> stack;
+	private final @NotNull Map<@NotNull JsonElement, @NotNull JsonElement> recursionStack = new IdentityHashMap<>();
 
 	/**
 	 * Creates a json saver.
 	 */
-	private JsonSaver(@NotNull Writer writer, boolean enableRecursiveCheck) {
+	private JsonSaver(@NotNull Writer writer) {
 		super(writer);
-		this.stack = enableRecursiveCheck ? new IdentityHashMap<>() : null;
 	}
 
 	/**
 	 * Save JSON element to output json.
 	 */
 	public static void save(@NotNull Writer writer, @NotNull JsonElement element) throws IOException, JsonException {
-		try (final JsonSaver saver = new JsonSaver(writer, true)) {
-			saver.write(element);
+		try (final JsonSaver saver = new JsonSaver(writer)) {
+			saver.writeElement(element);
 			if (!saver.isDone()) throw new AssertionError(); // safeguard
 		}
 	}
@@ -52,7 +50,7 @@ public final class JsonSaver extends JsonWriter {
 	/**
 	 * Write an element to the output json.
 	 */
-	private void write(@NotNull JsonElement element) throws IOException, JsonException {
+	private void writeElement(@NotNull JsonElement element) throws IOException, JsonException {
 		if (element instanceof JsonNumber) {
 			valueNumber((JsonNumber) element);
 		} else if (element instanceof JsonString) {
@@ -65,37 +63,48 @@ public final class JsonSaver extends JsonWriter {
 			} else if (element == JsonKeyword.NULL) {
 				valueNull();
 			} else {
-				throw new AssertionError("Unknown keyword!");
+				throw new AssertionError(); // safeguard
 			}
 		} else if (element instanceof JsonArray) {
-			final JsonArray array = (JsonArray) element;
-			if (stack != null && stack.put(array, array) != null) {
-				throw new JsonException("Recursive JSON detected!");
-			}
-			beginArray();
-			for (final JsonElement arrayElement : array) {
-				write(arrayElement);
-			}
-			endArray();
-			if (stack != null && stack.remove(array) != array) {
-				throw new AssertionError();
-			}
+			writeArray((JsonArray) element);
 		} else if (element instanceof JsonObject) {
-			final JsonObject object = (JsonObject) element;
-			if (stack != null && stack.put(object, object) != null) {
-				throw new JsonException("Recursive JSON detected!");
-			}
-			beginObject();
-			for (final Map.Entry<String, JsonElement> entry : object.entrySet()) {
-				name(entry.getKey());
-				write(entry.getValue());
-			}
-			endObject();
-			if (stack != null && stack.remove(object) != object) {
-				throw new AssertionError();
-			}
+			writeObject((JsonObject) element);
 		} else {
-			throw new JsonException("Unknown element type!");
+			throw new JsonException("Unknown element!");
 		}
 	}
+
+	/**
+	 * Write an array to the output json.
+	 */
+	private void writeArray(@NotNull JsonArray array) throws IOException, JsonException {
+		// check recursion
+		if (recursionStack.put(array, array) != null) throw new JsonException("Recursive structure detected!");
+		// write array
+		beginArray();
+		for (final JsonElement arrayElement : array) {
+			writeElement(arrayElement);
+		}
+		endArray();
+		// remove from recursion stack
+		if (recursionStack.remove(array) != array) throw new AssertionError(); // safeguard
+	}
+
+	/**
+	 * Write an object to the output json.
+	 */
+	private void writeObject(@NotNull JsonObject object) throws IOException, JsonException {
+		// check recursion
+		if (recursionStack.put(object, object) != null) throw new JsonException("Recursive structure detected!");
+		// write object
+		beginObject();
+		for (final Map.Entry<String, JsonElement> entry : object.entrySet()) {
+			name(entry.getKey());
+			writeElement(entry.getValue());
+		}
+		endObject();
+		// remove from recursion stack
+		if (recursionStack.remove(object) != object) throw new AssertionError(); // safeguard
+	}
+
 }
