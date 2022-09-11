@@ -31,7 +31,7 @@ public final class JsonKeyword implements JsonElement {
 		this.string = string;
 	}
 
-	public static JsonKeyword of(@Nullable Object object) {
+	public static @NotNull JsonKeyword of(@Nullable Object object) {
 		if (object == null) return NULL;
 		if (object == Boolean.TRUE) return TRUE;
 		if (object == Boolean.FALSE) return FALSE;
@@ -39,7 +39,7 @@ public final class JsonKeyword implements JsonElement {
 		throw new IllegalArgumentException();
 	}
 
-	public static JsonKeyword of(boolean bool) {
+	public static @NotNull JsonKeyword of(boolean bool) {
 		return bool ? TRUE : FALSE;
 	}
 
