@@ -5,7 +5,7 @@
 
 	<groupId>io.github.mrmathami</groupId>
 	<artifactId>jsonify</artifactId>
-	<version>LASTEST-SNAPSHOT</version>
+	<version>LATEST-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<!-- NOTE: Remember to add dependencies and bump version in pom-release! -->
