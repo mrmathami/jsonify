@@ -19,15 +19,17 @@ package io.github.mrmathami.jsonify;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+
 /**
  * jsonify custom exception.
  */
-public final class JsonException extends Exception {
-	public JsonException(@NotNull String message) {
-		super(message);
-	}
+public final class JsonException extends IOException {
+    public JsonException(@NotNull String message) {
+        super(message);
+    }
 
-	public JsonException(@NotNull String message, @NotNull Throwable cause) {
-		super(message, cause);
-	}
+    public JsonException(@NotNull String message, @NotNull Throwable cause) {
+        super(message, cause);
+    }
 }

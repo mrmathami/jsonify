@@ -33,7 +33,7 @@ public final class JsonLoader extends JsonReader {
 	/**
 	 * Load input json to JSON element.
 	 */
-	public static @NotNull JsonElement load(@NotNull Reader reader) throws IOException, JsonException {
+	public static @NotNull JsonElement load(@NotNull Reader reader) throws IOException {
 		try (final JsonLoader loader = new JsonLoader(reader)) {
 			final JsonElement value = loader.read(loader.nextToken());
 			loader.nextToken();
@@ -44,7 +44,7 @@ public final class JsonLoader extends JsonReader {
 	/**
 	 * Get next value from input JSON.
 	 */
-	private @NotNull JsonElement read(int token) throws IOException, JsonException {
+	private @NotNull JsonElement read(int token) throws IOException {
 		switch (token) {
 			case TOKEN_ARRAY_BEGIN: {
 				// already inside array

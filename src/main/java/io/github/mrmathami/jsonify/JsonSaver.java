@@ -40,7 +40,7 @@ public final class JsonSaver extends JsonWriter {
 	/**
 	 * Save JSON element to output json.
 	 */
-	public static void save(@NotNull Writer writer, @NotNull JsonElement element) throws IOException, JsonException {
+	public static void save(@NotNull Writer writer, @NotNull JsonElement element) throws IOException {
 		try (final JsonSaver saver = new JsonSaver(writer)) {
 			saver.writeElement(element);
 			if (!saver.isDone()) throw new AssertionError(); // safeguard
@@ -50,7 +50,7 @@ public final class JsonSaver extends JsonWriter {
 	/**
 	 * Write an element to the output json.
 	 */
-	private void writeElement(@NotNull JsonElement element) throws IOException, JsonException {
+	private void writeElement(@NotNull JsonElement element) throws IOException {
 		if (element instanceof JsonNumber) {
 			valueNumber((JsonNumber) element);
 		} else if (element instanceof JsonString) {
@@ -77,7 +77,7 @@ public final class JsonSaver extends JsonWriter {
 	/**
 	 * Write an array to the output json.
 	 */
-	private void writeArray(@NotNull JsonArray array) throws IOException, JsonException {
+	private void writeArray(@NotNull JsonArray array) throws IOException {
 		// check recursion
 		if (recursionStack.put(array, array) != null) throw new JsonException("Recursive structure detected!");
 		// write array
@@ -93,7 +93,7 @@ public final class JsonSaver extends JsonWriter {
 	/**
 	 * Write an object to the output json.
 	 */
-	private void writeObject(@NotNull JsonObject object) throws IOException, JsonException {
+	private void writeObject(@NotNull JsonObject object) throws IOException {
 		// check recursion
 		if (recursionStack.put(object, object) != null) throw new JsonException("Recursive structure detected!");
 		// write object
