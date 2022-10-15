@@ -230,7 +230,7 @@ public class JsonReader implements Closeable {
 	/**
 	 * Checks to make sure that the stream has not been closed and the reader is not in error state.
 	 */
-	private void ensureOpenAndValid() throws IOException, JsonException {
+	private void ensureOpenAndValid() throws IOException {
 		if (state == STATE_CLOSED) throw new IOException("Already closed!");
 		if (state == STATE_ERROR) throw new JsonException("Reader is in error state!");
 	}
@@ -253,7 +253,7 @@ public class JsonReader implements Closeable {
 	 * Note: This method will not skip the array end token and the object end token, instead it returns
 	 * {@link #TOKEN_ARRAY_END} or {@link #TOKEN_OBJECT_END} repeatedly.
 	 */
-	public int nextToken() throws IOException, JsonException {
+	public int nextToken() throws IOException {
 		ensureOpenAndValid();
 		try {
 			switch (state) {
@@ -323,7 +323,7 @@ public class JsonReader implements Closeable {
 				default:
 					throw new AssertionError();
 			}
-		} catch (IOException | JsonException exception) {
+		} catch (IOException exception) {
 			this.state = STATE_ERROR;
 			throw exception;
 		}
@@ -333,7 +333,7 @@ public class JsonReader implements Closeable {
 	 * Consume structure separator after a value and set state accordingly. This includes comma, array close bracket and
 	 * object close bracket.
 	 */
-	private void consumeSeparator() throws IOException, JsonException {
+	private void consumeSeparator() throws IOException {
 		if (lastStructureIndex >= 0) {
 			// the reader is inside an object or an array
 			final int c = readNonWhitespace();
@@ -368,7 +368,7 @@ public class JsonReader implements Closeable {
 	/**
 	 * Skip over the end of an Array or an Object.
 	 */
-	public void endStructure() throws IOException, JsonException {
+	public void endStructure() throws IOException {
 		ensureOpenAndValid();
 		try {
 			if (state == STATE_ARRAY_END || state == STATE_OBJECT_END) {
@@ -391,7 +391,7 @@ public class JsonReader implements Closeable {
 			} else {
 				throw new IllegalStateException("Not in a structure!");
 			}
-		} catch (IOException | JsonException exception) {
+		} catch (IOException exception) {
 			this.state = STATE_ERROR;
 			throw exception;
 		}
@@ -428,7 +428,7 @@ public class JsonReader implements Closeable {
 	/**
 	 * Consume a Name token and the separator token.
 	 */
-	private int name() throws IOException, JsonException {
+	private int name() throws IOException {
 		final int c = readNonWhitespace();
 		if (c == '\"') {
 			string();
@@ -444,7 +444,7 @@ public class JsonReader implements Closeable {
 	/**
 	 * Consume the Value token but DOES NOT consume the separator token.
 	 */
-	private int value() throws IOException, JsonException {
+	private int value() throws IOException {
 		final int c = readNonWhitespace();
 		if (c == '\"') {
 			string();
@@ -479,7 +479,7 @@ public class JsonReader implements Closeable {
 	/**
 	 * Consume a Number token and set the number value accordingly.
 	 */
-	private void number(int startCp) throws IOException, JsonException {
+	private void number(int startCp) throws IOException {
 		final StringBuilder builder = new StringBuilder();
 		boolean integer = true;
 		// first part: the integer
@@ -552,7 +552,7 @@ public class JsonReader implements Closeable {
 	/**
 	 * Consume a String token and set the string value accordingly.
 	 */
-	private void string() throws IOException, JsonException {
+	private void string() throws IOException {
 		// the open quote are already consumed
 		final StringBuilder builder = new StringBuilder();
 		while (true) {

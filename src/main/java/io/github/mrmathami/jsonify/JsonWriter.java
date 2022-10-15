@@ -133,7 +133,7 @@ public class JsonWriter implements Closeable {
 	/**
 	 * Begin an array. Throw JsonException if it is not expected.
 	 */
-	public void beginArray() throws IOException, JsonException {
+	public void beginArray() throws IOException {
 		switch (state) {
 			case STATE_CLOSED:
 				throw new IllegalStateException("Already closed!");
@@ -156,7 +156,7 @@ public class JsonWriter implements Closeable {
 	/**
 	 * End an array. Throw JsonException if it is not expected.
 	 */
-	public void endArray() throws IOException, JsonException {
+	public void endArray() throws IOException {
 		switch (state) {
 			case STATE_CLOSED:
 				throw new IOException("Already closed!");
@@ -180,7 +180,7 @@ public class JsonWriter implements Closeable {
 	/**
 	 * Begin an object. Throw JsonException if it is not expected.
 	 */
-	public void beginObject() throws IOException, JsonException {
+	public void beginObject() throws IOException {
 		switch (state) {
 			case STATE_CLOSED:
 				throw new IllegalStateException("Already closed!");
@@ -203,7 +203,7 @@ public class JsonWriter implements Closeable {
 	/**
 	 * End an object. Throw JsonException if it is not expected.
 	 */
-	public void endObject() throws IOException, JsonException {
+	public void endObject() throws IOException {
 		switch (state) {
 			case STATE_CLOSED:
 				throw new IllegalStateException("Already closed!");
@@ -227,7 +227,7 @@ public class JsonWriter implements Closeable {
 	/**
 	 * Write a name part for an object name & value pair. Throw JsonException if it is not expected.
 	 */
-	public void name(@NotNull String name) throws IOException, JsonException {
+	public void name(@NotNull String name) throws IOException {
 		switch (state) {
 			case STATE_CLOSED:
 				throw new IllegalStateException("Already closed!");
@@ -245,77 +245,77 @@ public class JsonWriter implements Closeable {
 	/**
 	 * Write a boolean value. Throw JsonException if it is not expected.
 	 */
-	public void valueBoolean(boolean value) throws IOException, JsonException {
+	public void valueBoolean(boolean value) throws IOException {
 		writeValueRaw(value ? "true" : "false");
 	}
 
 	/**
 	 * Write a number value. Throw JsonException if it is not expected.
 	 */
-	public void valueNumber(int value) throws IOException, JsonException {
+	public void valueNumber(int value) throws IOException {
 		writeValueRaw(String.valueOf(value));
 	}
 
 	/**
 	 * Write a number value. Throw JsonException if it is not expected.
 	 */
-	public void valueNumber(long value) throws IOException, JsonException {
+	public void valueNumber(long value) throws IOException {
 		writeValueRaw(String.valueOf(value));
 	}
 
 	/**
 	 * Write a number value. Throw JsonException if it is not expected.
 	 */
-	public void valueNumber(float value) throws IOException, JsonException {
+	public void valueNumber(float value) throws IOException {
 		writeValueRaw(String.valueOf(value));
 	}
 
 	/**
 	 * Write a number value. Throw JsonException if it is not expected.
 	 */
-	public void valueNumber(double value) throws IOException, JsonException {
+	public void valueNumber(double value) throws IOException {
 		writeValueRaw(String.valueOf(value));
 	}
 
 	/**
 	 * Write a number value. Throw JsonException if it is not expected.
 	 */
-	public void valueNumber(@NotNull BigDecimal value) throws IOException, JsonException {
+	public void valueNumber(@NotNull BigDecimal value) throws IOException {
 		writeValueRaw(value.toString());
 	}
 
 	/**
 	 * Write a number value. Throw JsonException if it is not expected.
 	 */
-	public void valueNumber(@NotNull BigInteger value) throws IOException, JsonException {
+	public void valueNumber(@NotNull BigInteger value) throws IOException {
 		writeValueRaw(value.toString());
 	}
 
 	/**
 	 * Write a number value. Throw JsonException if it is not expected.
 	 */
-	public void valueNumber(@NotNull JsonNumber value) throws IOException, JsonException {
+	public void valueNumber(@NotNull JsonNumber value) throws IOException {
 		writeValueRaw(value.toString());
 	}
 
 	/**
 	 * Write a string value. Throw JsonException if it is not expected.
 	 */
-	public void valueString(char value) throws IOException, JsonException {
+	public void valueString(char value) throws IOException {
 		writeValueString(String.valueOf(value));
 	}
 
 	/**
 	 * Write a string value. Throw JsonException if it is not expected.
 	 */
-	public void valueString(@NotNull String value) throws IOException, JsonException {
+	public void valueString(@NotNull String value) throws IOException {
 		writeValueString(value);
 	}
 
 	/**
 	 * Write a null value. Throw JsonException if it is not expected.
 	 */
-	public void valueNull() throws IOException, JsonException {
+	public void valueNull() throws IOException {
 		writeValueRaw("null");
 	}
 
@@ -324,7 +324,7 @@ public class JsonWriter implements Closeable {
 	/**
 	 * Write value in raw mode instead of string mode. Raw mode does not escape the string.
 	 */
-	private void writeValueRaw(@NotNull String rawValue) throws IOException, JsonException {
+	private void writeValueRaw(@NotNull String rawValue) throws IOException {
 		writeValueSeparator();
 		writer.write(rawValue);
 	}
@@ -332,7 +332,7 @@ public class JsonWriter implements Closeable {
 	/**
 	 * Write value in string mode instead of raw mode. String mode does escape the string and put them in quote.
 	 */
-	private void writeValueString(@NotNull String string) throws IOException, JsonException {
+	private void writeValueString(@NotNull String string) throws IOException {
 		writeValueSeparator();
 		writeStringUnchecked(string);
 	}
@@ -341,7 +341,7 @@ public class JsonWriter implements Closeable {
 	 * Write the separator (COLON for the name value separator, COMMA for the value separator or for name-value pair
 	 * separator)
 	 */
-	private void writeValueSeparator() throws IOException, JsonException {
+	private void writeValueSeparator() throws IOException {
 		switch (state) {
 			case STATE_CLOSED:
 				throw new IllegalStateException("Already closed!");
