@@ -21,9 +21,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+// TODO remove this API, this is unnecessary
 public final class JsonSaver extends JsonWriter {
 	/**
 	 * The active element stack, use to detect recursive write of the same element.
@@ -52,7 +55,18 @@ public final class JsonSaver extends JsonWriter {
 	 */
 	private void writeElement(@NotNull JsonElement element) throws IOException {
 		if (element instanceof JsonNumber) {
-			valueNumber((JsonNumber) element);
+			final Number number = ((JsonNumber) element).getValue();
+			if (number instanceof Long) {
+				valueNumber((Long) number);
+			} else if (number instanceof Double) {
+				valueNumber((Double) number);
+			} else if (number instanceof BigInteger) {
+				valueNumber((BigInteger) number);
+			} else if (number instanceof BigDecimal) {
+				valueNumber((BigDecimal) number);
+			} else {
+				throw new AssertionError();
+			}
 		} else if (element instanceof JsonString) {
 			valueString(element.toString());
 		} else if (element instanceof JsonKeyword) {
@@ -85,7 +99,7 @@ public final class JsonSaver extends JsonWriter {
 		for (final JsonElement arrayElement : array) {
 			writeElement(arrayElement);
 		}
-		endArray();
+		end();
 		// remove from recursion stack
 		if (recursionStack.remove(array) != array) throw new AssertionError(); // safeguard
 	}
@@ -102,9 +116,8 @@ public final class JsonSaver extends JsonWriter {
 			name(entry.getKey());
 			writeElement(entry.getValue());
 		}
-		endObject();
+		end();
 		// remove from recursion stack
 		if (recursionStack.remove(object) != object) throw new AssertionError(); // safeguard
 	}
-
 }

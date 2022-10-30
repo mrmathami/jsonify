@@ -19,7 +19,6 @@ package io.github.mrmathami.jsonify;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
@@ -29,7 +28,7 @@ import java.util.BitSet;
 /**
  * JSON writer.
  */
-public class JsonWriter implements Closeable {
+public class JsonWriter implements JsonOutput {
 	/**
 	 * The output writer.
 	 */
@@ -131,7 +130,7 @@ public class JsonWriter implements Closeable {
 	//========================================
 
 	/**
-	 * Begin an array. Throw JsonException if it is not expected.
+	 * Begin an array. Throws {@link JsonException} if this is unexpected.
 	 */
 	public void beginArray() throws IOException {
 		switch (state) {
@@ -154,31 +153,7 @@ public class JsonWriter implements Closeable {
 	}
 
 	/**
-	 * End an array. Throw JsonException if it is not expected.
-	 */
-	public void endArray() throws IOException {
-		switch (state) {
-			case STATE_CLOSED:
-				throw new IOException("Already closed!");
-			case STATE_EXPECT_VALUE_NO_SEPARATOR:
-			case STATE_EXPECT_VALUE_WITH_COMMA:
-				if (lastStructures.get(lastStructureIndex)) {
-					this.lastStructureIndex -= 1;
-					writer.append(']');
-					this.state = lastStructureIndex >= 0
-							? lastStructures.get(lastStructureIndex)
-							? STATE_EXPECT_VALUE_WITH_COMMA
-							: STATE_EXPECT_NAME_WITH_COMMA
-							: STATE_EXPECT_DOCUMENT_END;
-					return;
-				}
-			default:
-				throw new JsonException("Array end not expected!");
-		}
-	}
-
-	/**
-	 * Begin an object. Throw JsonException if it is not expected.
+	 * Begin an object. Throws {@link JsonException} if this is unexpected.
 	 */
 	public void beginObject() throws IOException {
 		switch (state) {
@@ -201,12 +176,12 @@ public class JsonWriter implements Closeable {
 	}
 
 	/**
-	 * End an object. Throw JsonException if it is not expected.
+	 * End an array or an object. Throws {@link JsonException} if this is unexpected.
 	 */
-	public void endObject() throws IOException {
+	public void end() throws IOException {
 		switch (state) {
 			case STATE_CLOSED:
-				throw new IllegalStateException("Already closed!");
+				throw new IOException("Already closed!");
 			case STATE_EXPECT_NAME_NO_SEPARATOR:
 			case STATE_EXPECT_NAME_WITH_COMMA:
 				if (!lastStructures.get(lastStructureIndex)) {
@@ -219,13 +194,25 @@ public class JsonWriter implements Closeable {
 							: STATE_EXPECT_DOCUMENT_END;
 					return;
 				}
+			case STATE_EXPECT_VALUE_NO_SEPARATOR:
+			case STATE_EXPECT_VALUE_WITH_COMMA:
+				if (lastStructures.get(lastStructureIndex)) {
+					this.lastStructureIndex -= 1;
+					writer.append(']');
+					this.state = lastStructureIndex >= 0
+							? lastStructures.get(lastStructureIndex)
+							? STATE_EXPECT_VALUE_WITH_COMMA
+							: STATE_EXPECT_NAME_WITH_COMMA
+							: STATE_EXPECT_DOCUMENT_END;
+					return;
+				}
 			default:
-				throw new JsonException("Object end not expected!");
+				throw new JsonException("Array end not expected!");
 		}
 	}
 
 	/**
-	 * Write a name part for an object name & value pair. Throw JsonException if it is not expected.
+	 * Write a name. Throws {@link JsonException} if this is unexpected.
 	 */
 	public void name(@NotNull String name) throws IOException {
 		switch (state) {
@@ -243,77 +230,68 @@ public class JsonWriter implements Closeable {
 	}
 
 	/**
-	 * Write a boolean value. Throw JsonException if it is not expected.
+	 * Write a {@link JsonElement} value. Throws {@link JsonException} if this is unexpected.
+	 */
+	@Override
+	public void value(@NotNull JsonElement element) throws IOException {
+		// TODO implement this
+	}
+
+	/**
+	 * Write a boolean value. Throws {@link JsonException} if this is unexpected.
 	 */
 	public void valueBoolean(boolean value) throws IOException {
 		writeValueRaw(value ? "true" : "false");
 	}
 
 	/**
-	 * Write a number value. Throw JsonException if it is not expected.
-	 */
-	public void valueNumber(int value) throws IOException {
-		writeValueRaw(String.valueOf(value));
-	}
-
-	/**
-	 * Write a number value. Throw JsonException if it is not expected.
+	 * Write a integer number value. Throws {@link JsonException} if this is unexpected.
 	 */
 	public void valueNumber(long value) throws IOException {
-		writeValueRaw(String.valueOf(value));
+		writeValueRaw(Long.toString(value));
 	}
 
 	/**
-	 * Write a number value. Throw JsonException if it is not expected.
-	 */
-	public void valueNumber(float value) throws IOException {
-		writeValueRaw(String.valueOf(value));
-	}
-
-	/**
-	 * Write a number value. Throw JsonException if it is not expected.
+	 * Write a decimal number value. Throws {@link JsonException} if this is unexpected.
 	 */
 	public void valueNumber(double value) throws IOException {
-		writeValueRaw(String.valueOf(value));
+		if (Double.isFinite(value)) {
+			writeValueRaw(Double.toString(value));
+		} else {
+			throw new NumberFormatException("JSON number cannot be NaN or Infinity.");
+		}
 	}
 
 	/**
-	 * Write a number value. Throw JsonException if it is not expected.
-	 */
-	public void valueNumber(@NotNull BigDecimal value) throws IOException {
-		writeValueRaw(value.toString());
-	}
-
-	/**
-	 * Write a number value. Throw JsonException if it is not expected.
+	 * Write a big integer number value. Throws {@link JsonException} if this is unexpected.
 	 */
 	public void valueNumber(@NotNull BigInteger value) throws IOException {
 		writeValueRaw(value.toString());
 	}
 
 	/**
-	 * Write a number value. Throw JsonException if it is not expected.
+	 * Write a big decimal number value. Throws {@link JsonException} if this is unexpected.
 	 */
-	public void valueNumber(@NotNull JsonNumber value) throws IOException {
+	public void valueNumber(@NotNull BigDecimal value) throws IOException {
 		writeValueRaw(value.toString());
 	}
 
 	/**
-	 * Write a string value. Throw JsonException if it is not expected.
+	 * Write a string value. Throws {@link JsonException} if this is unexpected.
 	 */
 	public void valueString(char value) throws IOException {
 		writeValueString(String.valueOf(value));
 	}
 
 	/**
-	 * Write a string value. Throw JsonException if it is not expected.
+	 * Write a string value. Throws {@link JsonException} if this is unexpected.
 	 */
 	public void valueString(@NotNull String value) throws IOException {
 		writeValueString(value);
 	}
 
 	/**
-	 * Write a null value. Throw JsonException if it is not expected.
+	 * Write a null value. Throws {@link JsonException} if this is unexpected.
 	 */
 	public void valueNull() throws IOException {
 		writeValueRaw("null");
