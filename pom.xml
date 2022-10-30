@@ -90,7 +90,7 @@
 				<version>2.6.0</version>
 				<executions>
 					<execution>
-						<phase>package</phase>
+						<phase>deploy</phase>
 						<goals>
 							<goal>proguard</goal>
 						</goals>
