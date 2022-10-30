@@ -27,6 +27,10 @@ public final class JsonString implements JsonElement {
 		this.value = value;
 	}
 
+	public JsonString(char value) {
+		this.value = String.valueOf(value);
+	}
+
 	@Override
 	public boolean equals(@Nullable Object object) {
 		return this == object || object instanceof JsonString && value.equals(object.toString());
