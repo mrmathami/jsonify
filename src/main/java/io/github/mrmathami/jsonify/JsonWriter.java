@@ -24,6 +24,8 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.BitSet;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 /**
  * JSON writer.
@@ -230,14 +232,6 @@ public class JsonWriter implements JsonOutput {
 	}
 
 	/**
-	 * Write a {@link JsonElement} value. Throws {@link JsonException} if this is unexpected.
-	 */
-	@Override
-	public void value(@NotNull JsonElement element) throws IOException {
-		// TODO implement this
-	}
-
-	/**
 	 * Write a boolean value. Throws {@link JsonException} if this is unexpected.
 	 */
 	public void valueBoolean(boolean value) throws IOException {
@@ -295,6 +289,92 @@ public class JsonWriter implements JsonOutput {
 	 */
 	public void valueNull() throws IOException {
 		writeValueRaw("null");
+	}
+
+	//========================================
+
+	/**
+	 * The active element stack, use to detect recursive write of the same element.
+	 */
+	private final @NotNull Map<@NotNull JsonElement, @NotNull JsonElement> recursionStack = new IdentityHashMap<>();
+
+	/**
+	 * Write a {@link JsonElement} value. Throws {@link JsonException} if this is unexpected.
+	 */
+	@Override
+	public void value(@NotNull JsonElement element) throws IOException {
+		if (element instanceof JsonNumber) {
+			valueNumber((JsonNumber) element);
+		} else if (element instanceof JsonString) {
+			valueString(element.toString());
+		} else if (element instanceof JsonKeyword) {
+			if (element == JsonKeyword.TRUE) {
+				valueBoolean(true);
+			} else if (element == JsonKeyword.FALSE) {
+				valueBoolean(false);
+			} else if (element == JsonKeyword.NULL) {
+				valueNull();
+			} else {
+				throw new AssertionError(); // safeguard
+			}
+		} else if (element instanceof JsonArray) {
+			valueArray((JsonArray) element);
+		} else if (element instanceof JsonObject) {
+			valueObject((JsonObject) element);
+		} else {
+			throw new JsonException("Unknown element!");
+		}
+	}
+
+	/**
+	 * Write a {@link JsonNumber} value. Throws {@link JsonException} if this is unexpected.
+	 */
+	private void valueNumber(@NotNull JsonNumber element) throws IOException {
+		final Number number = element.getValue();
+		if (number instanceof Long) {
+			valueNumber((Long) number);
+		} else if (number instanceof Double) {
+			valueNumber((Double) number);
+		} else if (number instanceof BigInteger) {
+			valueNumber((BigInteger) number);
+		} else if (number instanceof BigDecimal) {
+			valueNumber((BigDecimal) number);
+		} else {
+			throw new AssertionError();
+		}
+	}
+
+	/**
+	 * Write a {@link JsonArray}. Throws {@link JsonException} if this is unexpected.
+	 */
+	private void valueArray(@NotNull JsonArray array) throws IOException {
+		// check recursion
+		if (recursionStack.put(array, array) != null) throw new JsonException("Recursive structure detected!");
+		// write array
+		beginArray();
+		for (final JsonElement arrayElement : array) {
+			value(arrayElement);
+		}
+		end();
+		// remove from recursion stack
+		if (recursionStack.remove(array) != array) throw new AssertionError(); // safeguard
+	}
+
+	/**
+	 * Write a {@link JsonObject}. Throws {@link JsonException} if this is unexpected.
+	 */
+	private void valueObject(@NotNull JsonObject object) throws IOException {
+		// check recursion
+		if (recursionStack.put(object, object) != null) throw new JsonException("Recursive structure detected!");
+		// write object
+		beginObject();
+		for (final Map.Entry<String, JsonElement> entry : object.entrySet()) {
+			name(entry.getKey());
+			value(entry.getValue());
+		}
+		end();
+		// remove from recursion stack
+		if (recursionStack.remove(object) != object) throw new AssertionError(); // safeguard
 	}
 
 	//========================================

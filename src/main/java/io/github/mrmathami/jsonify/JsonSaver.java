@@ -21,103 +21,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.IdentityHashMap;
-import java.util.Map;
 
 // TODO remove this API, this is unnecessary
-public final class JsonSaver extends JsonWriter {
-	/**
-	 * The active element stack, use to detect recursive write of the same element.
-	 */
-	private final @NotNull Map<@NotNull JsonElement, @NotNull JsonElement> recursionStack = new IdentityHashMap<>();
-
-	/**
-	 * Creates a json saver.
-	 */
-	private JsonSaver(@NotNull Writer writer) {
-		super(writer);
-	}
-
+public final class JsonSaver {
 	/**
 	 * Save JSON element to output json.
 	 */
 	public static void save(@NotNull Writer writer, @NotNull JsonElement element) throws IOException {
-		try (final JsonSaver saver = new JsonSaver(writer)) {
-			saver.writeElement(element);
-			if (!saver.isDone()) throw new AssertionError(); // safeguard
+		try (final JsonWriter jsonWriter = new JsonWriter(writer)) {
+			jsonWriter.value(element);
+			if (!jsonWriter.isDone()) throw new AssertionError(); // safeguard
 		}
-	}
-
-	/**
-	 * Write an element to the output json.
-	 */
-	private void writeElement(@NotNull JsonElement element) throws IOException {
-		if (element instanceof JsonNumber) {
-			final Number number = ((JsonNumber) element).getValue();
-			if (number instanceof Long) {
-				valueNumber((Long) number);
-			} else if (number instanceof Double) {
-				valueNumber((Double) number);
-			} else if (number instanceof BigInteger) {
-				valueNumber((BigInteger) number);
-			} else if (number instanceof BigDecimal) {
-				valueNumber((BigDecimal) number);
-			} else {
-				throw new AssertionError();
-			}
-		} else if (element instanceof JsonString) {
-			valueString(element.toString());
-		} else if (element instanceof JsonKeyword) {
-			if (element == JsonKeyword.TRUE) {
-				valueBoolean(true);
-			} else if (element == JsonKeyword.FALSE) {
-				valueBoolean(false);
-			} else if (element == JsonKeyword.NULL) {
-				valueNull();
-			} else {
-				throw new AssertionError(); // safeguard
-			}
-		} else if (element instanceof JsonArray) {
-			writeArray((JsonArray) element);
-		} else if (element instanceof JsonObject) {
-			writeObject((JsonObject) element);
-		} else {
-			throw new JsonException("Unknown element!");
-		}
-	}
-
-	/**
-	 * Write an array to the output json.
-	 */
-	private void writeArray(@NotNull JsonArray array) throws IOException {
-		// check recursion
-		if (recursionStack.put(array, array) != null) throw new JsonException("Recursive structure detected!");
-		// write array
-		beginArray();
-		for (final JsonElement arrayElement : array) {
-			writeElement(arrayElement);
-		}
-		end();
-		// remove from recursion stack
-		if (recursionStack.remove(array) != array) throw new AssertionError(); // safeguard
-	}
-
-	/**
-	 * Write an object to the output json.
-	 */
-	private void writeObject(@NotNull JsonObject object) throws IOException {
-		// check recursion
-		if (recursionStack.put(object, object) != null) throw new JsonException("Recursive structure detected!");
-		// write object
-		beginObject();
-		for (final Map.Entry<String, JsonElement> entry : object.entrySet()) {
-			name(entry.getKey());
-			writeElement(entry.getValue());
-		}
-		end();
-		// remove from recursion stack
-		if (recursionStack.remove(object) != object) throw new AssertionError(); // safeguard
 	}
 }

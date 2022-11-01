@@ -46,11 +46,6 @@ public interface JsonOutput extends Closeable {
 	void name(@NotNull String name) throws IOException;
 
 	/**
-	 * Write a {@link JsonElement} value. Throws {@link JsonException} if this is unexpected.
-	 */
-	void value(@NotNull JsonElement element) throws IOException;
-
-	/**
 	 * Write a boolean value. Throws {@link JsonException} if this is unexpected.
 	 */
 	void valueBoolean(boolean value) throws IOException;
@@ -89,4 +84,9 @@ public interface JsonOutput extends Closeable {
 	 * Write a null value. Throws {@link JsonException} if this is unexpected.
 	 */
 	void valueNull() throws IOException;
+
+	/**
+	 * Write a {@link JsonElement} value. Throws {@link JsonException} if this is unexpected.
+	 */
+	void value(@NotNull JsonElement element) throws IOException;
 }
