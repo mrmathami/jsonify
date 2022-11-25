@@ -26,7 +26,7 @@ import java.math.BigInteger;
 /**
  * JSON number. Note that JSON standard doesn't allow NaN and Infinity.
  */
-public final class JsonNumber extends Number implements JsonElement {
+public final class JsonNumber extends Number implements JsonElement, JsonToken {
 	/**
 	 * If able, {@link Long} or {@link Double} type without losing precision.
 	 */

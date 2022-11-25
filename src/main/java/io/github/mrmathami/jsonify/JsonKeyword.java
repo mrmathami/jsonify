@@ -20,7 +20,7 @@ package io.github.mrmathami.jsonify;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class JsonKeyword implements JsonElement {
+public final class JsonKeyword implements JsonElement, JsonToken {
 	public static final @NotNull JsonKeyword TRUE = new JsonKeyword("true");
 	public static final @NotNull JsonKeyword FALSE = new JsonKeyword("false");
 	public static final @NotNull JsonKeyword NULL = new JsonKeyword("null");

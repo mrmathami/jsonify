@@ -20,20 +20,20 @@ package io.github.mrmathami.jsonify;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class JsonString implements JsonElement, JsonToken {
+public final class JsonName implements JsonToken {
 	private final @NotNull String value;
 
-	public JsonString(@NotNull String value) {
+	public JsonName(@NotNull String value) {
 		this.value = value;
 	}
 
-	public JsonString(char value) {
+	public JsonName(char value) {
 		this.value = String.valueOf(value);
 	}
 
 	@Override
 	public boolean equals(@Nullable Object object) {
-		return this == object || object instanceof JsonString && value.equals(object.toString());
+		return this == object || object instanceof JsonName && value.equals(object.toString());
 	}
 
 	@Override
