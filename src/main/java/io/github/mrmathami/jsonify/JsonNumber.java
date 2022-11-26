@@ -26,19 +26,23 @@ import java.math.BigInteger;
 /**
  * JSON number. Note that JSON standard doesn't allow NaN and Infinity.
  */
-public final class JsonNumber extends Number implements JsonElement {
+public final class JsonNumber extends Number implements JsonElement, JsonToken {
 	/**
 	 * If able, {@link Long} or {@link Double} type without losing precision.
 	 */
 	private final @NotNull Number value;
 
 
+	/**
+	 * Create a {@link JsonNumber} with a {@code long} value.
+	 */
 	public JsonNumber(long value) {
 		this.value = value;
 	}
 
 	/**
-	 * Throws {@link NumberFormatException} when {@code value} is NaN, +Infinity or -Infinity.
+	 * Create a {@link JsonNumber} with a {@code double} value. Throws {@link NumberFormatException} when input value is
+	 * NaN, +Infinity or -Infinity.
 	 */
 	public JsonNumber(double value) {
 		if (Double.isFinite(value)) {
@@ -48,10 +52,18 @@ public final class JsonNumber extends Number implements JsonElement {
 		}
 	}
 
+	/**
+	 * Create a {@link JsonNumber} with a {@link BigInteger} value. The value will be saved as a {@link Long} if it
+	 * fits.
+	 */
 	public JsonNumber(@NotNull BigInteger value) {
 		this.value = tryIntegerToLong(value);
 	}
 
+	/**
+	 * Create a {@link JsonNumber} with a {@link BigDecimal} value. The value will be saved as a {@link Double} if it
+	 * fits.
+	 */
 	public JsonNumber(@NotNull BigDecimal value) {
 		this.value = tryDecimalToPrimitive(value);
 	}
@@ -66,34 +78,46 @@ public final class JsonNumber extends Number implements JsonElement {
 	}
 
 	private static @NotNull Number tryDecimalToPrimitive(@NotNull BigDecimal decimal) {
-		final int precision = decimal.precision();
-		final int scale = decimal.scale();
 		// double is precision(15..17) scale[-1022;1023]
-		if (precision <= 17 && scale >= -1022 && scale <= 1023) {
-			final String formatString = "%." + precision + 'e';
-			final double doubleValue = decimal.doubleValue();
-			if (Double.isFinite(doubleValue)) {
-				final String doubleString = String.format(formatString, doubleValue);
-				final String decimalString = String.format(formatString, decimal);
-				if (doubleString.equals(decimalString)) return doubleValue;
-			}
-		}
+		final int precision = decimal.precision();
+		if (precision > 17) return decimal;
+		final int scale = decimal.scale();
+		if (scale < -1022 || scale > 1023) return decimal;
+		final String formatString = "%." + precision + 'e';
+		final double doubleValue = decimal.doubleValue();
+		if (!Double.isFinite(doubleValue)) return decimal;
+		final String doubleString = String.format(formatString, doubleValue);
+		final String decimalString = String.format(formatString, decimal);
+		if (doubleString.equals(decimalString)) return doubleValue;
 		return decimal;
 	}
 
 
+	/**
+	 * Check if this is an integer number (a {@link Long} or a {@link BigInteger}).
+	 */
 	public boolean isInteger() {
-		return value instanceof BigInteger || value instanceof Long;
+		return value instanceof Long || value instanceof BigInteger;
 	}
 
+	/**
+	 * Check if this is a decimal number (a {@link Double} or a {@link BigDecimal}).
+	 */
 	public boolean isDecimal() {
-		return value instanceof BigDecimal || value instanceof Double;
+		return value instanceof Double || value instanceof BigDecimal;
 	}
 
+	/**
+	 * Check if this is a big number (a {@link BigInteger} or a {@link BigDecimal}).
+	 */
 	public boolean isBig() {
 		return value instanceof BigInteger || value instanceof BigDecimal;
 	}
 
+	/**
+	 * Return a {@link Number}. The number returned can only be a {@link Long}, a {@link Double}, a {@link BigInteger}
+	 * or a {@link BigDecimal}.
+	 */
 	public @NotNull Number getValue() {
 		return value;
 	}
