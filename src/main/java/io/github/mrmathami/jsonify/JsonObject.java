@@ -18,11 +18,28 @@
 package io.github.mrmathami.jsonify;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedHashMap;
 
 public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull JsonElement> implements JsonElement {
 	public JsonObject() {
 		super(16, 0.5f);
+	}
+
+	public @Nullable JsonElement putValue(@NotNull String key, @Nullable String value) {
+		return put(key, value != null ? new JsonString(value) : JsonKeyword.NULL);
+	}
+
+	public @Nullable JsonElement putValue(@NotNull String key, boolean value) {
+		return put(key, JsonKeyword.of(value));
+	}
+
+	public @Nullable JsonElement putValue(@NotNull String key, long value) {
+		return put(key, new JsonNumber(value));
+	}
+
+	public @Nullable JsonElement putValue(@NotNull String key, double value) {
+		return put(key, new JsonNumber(value));
 	}
 }

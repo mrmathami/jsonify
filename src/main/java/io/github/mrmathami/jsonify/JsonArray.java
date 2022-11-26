@@ -18,8 +18,24 @@
 package io.github.mrmathami.jsonify;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
 public final class JsonArray extends ArrayList<@NotNull JsonElement> implements JsonElement {
+	public boolean addValue(@Nullable String value) {
+		return add(value != null ? new JsonString(value) : JsonKeyword.NULL);
+	}
+
+	public boolean addValue(boolean value) {
+		return add(JsonKeyword.of(value));
+	}
+
+	public boolean addValue(long value) {
+		return add(new JsonNumber(value));
+	}
+
+	public boolean addValue(double value) {
+		return add(new JsonNumber(value));
+	}
 }
