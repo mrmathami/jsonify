@@ -19,7 +19,7 @@ JSON reader/writer library. Currently, it is in production-ready stage. The API 
 
 ### High level usage
 
-An input JSON can be loaded and parsed by using `JsonElement element = JsonLoader.load(reader);`. Similarly, the `JsonElement` can be saved back to JSON using `JsonSaver.save(writer, element)`.
+An input JSON can be loaded and parsed by using `JsonElement element = JsonReader.read(reader);`. Similarly, the `JsonElement` can be saved back to JSON using `JsonWriter.write(writer, element)`.
 
 There are a few type of `JsonElement`:
 
@@ -31,11 +31,11 @@ There are a few type of `JsonElement`:
 
 `JsonArray` and `JsonObject` are mutable; `JsonString`, `JsonNumber` and `JsonKeyword` are immutable.
 
-Note that `JsonSaver::save` do check for recursive references and will throw `JsonException` in that case.
+Note that `JsonWriter::write` do check for circular references and will throw `JsonException` in that case.
 
 ### Low level usage
 
-If you want more control on the reader or the writer, you can use `JsonReader` and `JsonWriter` directly to load and save JSON from and to your own data structure. Moreover, when using `JsonReader` instead of `JsonLoader::load`, you have ability to skip the rest of the content of an array or an object you are reading on, thus save times and memory.
+If you want more control on the reader/writer, you can use an instance of `JsonReader`/`JsonWriter` directly to load/save JSON from/to your own data structure. Moreover, when using an instance of `JsonReader` instead of `JsonReader::read`, you have ability to skip over the remaining content of an array or an object you are reading on, thus save times and memory.
 
 ## Todo
 
