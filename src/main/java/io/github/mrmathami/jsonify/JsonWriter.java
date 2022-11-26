@@ -46,6 +46,17 @@ public class JsonWriter implements JsonOutput {
 	//========================================
 
 	/**
+	 * Save JSON element to output json.
+	 */
+	public static void write(@NotNull Writer outputWriter, @NotNull JsonElement element) throws IOException {
+		try (final JsonWriter writer = new JsonWriter(outputWriter)) {
+			writer.value(element);
+		}
+	}
+
+	//========================================
+
+	/**
 	 * Close the JSON writer, also close the underlying writer.
 	 */
 	@Override
