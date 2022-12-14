@@ -31,12 +31,11 @@ public final class JsonKeyword implements JsonElement, JsonToken {
 		this.string = string;
 	}
 
-	public static @NotNull JsonKeyword of(@Nullable Object object) {
+	public static @NotNull JsonKeyword of(@Nullable Boolean object) {
 		if (object == null) return NULL;
 		if (object == Boolean.TRUE) return TRUE;
 		if (object == Boolean.FALSE) return FALSE;
-		if (object instanceof JsonKeyword) return (JsonKeyword) object;
-		throw new IllegalArgumentException();
+		throw new AssertionError();
 	}
 
 	public static @NotNull JsonKeyword of(boolean bool) {

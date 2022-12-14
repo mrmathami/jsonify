@@ -65,7 +65,7 @@ public final class JsonNumber extends Number implements JsonElement, JsonToken {
 	 * fits.
 	 */
 	public JsonNumber(@NotNull BigDecimal value) {
-		this.value = tryDecimalToPrimitive(value);
+		this.value = tryDecimalToDouble(value);
 	}
 
 
@@ -77,7 +77,7 @@ public final class JsonNumber extends Number implements JsonElement, JsonToken {
 		return integer;
 	}
 
-	private static @NotNull Number tryDecimalToPrimitive(@NotNull BigDecimal decimal) {
+	private static @NotNull Number tryDecimalToDouble(@NotNull BigDecimal decimal) {
 		// double is precision(15..17) scale[-1022;1023]
 		final int precision = decimal.precision();
 		if (precision > 17) return decimal;
@@ -120,6 +120,44 @@ public final class JsonNumber extends Number implements JsonElement, JsonToken {
 	 */
 	public @NotNull Number getValue() {
 		return value;
+	}
+
+	/**
+	 * Return a {@link Long} or {@code null}.
+	 */
+	public @Nullable Long getValueAsLong() {
+		return value instanceof Long ? (Long) value : null;
+	}
+
+	/**
+	 * Return a {@link Double} or {@code null}.
+	 */
+	public @Nullable Double getValueAsDouble() {
+		return value instanceof Double ? (Double) value : null;
+	}
+
+	/**
+	 * Return a {@link BigInteger} or {@code null}. If the inner value is a {@link Long}, this method create a
+	 * {@link BigInteger} from it.
+	 */
+	public @Nullable BigInteger getValueAsBigInteger() {
+		return value instanceof BigInteger
+				? (BigInteger) value
+				: value instanceof Long
+				? BigInteger.valueOf((long) value)
+				: null;
+	}
+
+	/**
+	 * Return a {@link BigDecimal} or {@code null}. If the inner value is a {@link Double}, this method create a
+	 * {@link BigDecimal} from it.
+	 */
+	public @Nullable BigDecimal getValueAsBigDecimal() {
+		return value instanceof BigDecimal
+				? (BigDecimal) value
+				: value instanceof Double
+				? BigDecimal.valueOf((double) value)
+				: null;
 	}
 
 
