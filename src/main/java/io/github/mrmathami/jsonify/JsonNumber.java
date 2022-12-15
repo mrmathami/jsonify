@@ -24,7 +24,14 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
- * JSON number. Note that JSON standard doesn't allow NaN and Infinity.
+ * A JSON number. This implementation will reserve the exact value that appeared in the JSON: big integers are returned
+ * as {@link BigInteger}, and high precision decimals are returned as {@link BigDecimal}. This does not violate the JSON
+ * specification, as by RFC7159, the JSON specification "allows implementations to set limits on the range and precision
+ * of numbers accepted.". However, the specification also suggested that "good interoperability can be achieved by
+ * implementations that expect no more precision or range than these (IEEE 754-2008 binary64, usually called double
+ * precision) provide, in the sense that implementations will approximate JSON numbers within the expected precision.".
+ * In other words, don't expect other libraries to respect the exact values of higher-than-double-precision decimals
+ * that this library produce. Also, please note that JSON specification doesn't allow NaN and Infinity.
  */
 public final class JsonNumber extends Number implements JsonElement, JsonToken {
 	/**
@@ -94,51 +101,53 @@ public final class JsonNumber extends Number implements JsonElement, JsonToken {
 
 
 	/**
-	 * Check if this is an integer number (a {@link Long} or a {@link BigInteger}).
+	 * Check if the inner value is an integer (a {@link Long} or a {@link BigInteger}).
 	 */
 	public boolean isInteger() {
 		return value instanceof Long || value instanceof BigInteger;
 	}
 
 	/**
-	 * Check if this is a decimal number (a {@link Double} or a {@link BigDecimal}).
+	 * Check if the inner value is a decimal (a {@link Double} or a {@link BigDecimal}).
 	 */
 	public boolean isDecimal() {
 		return value instanceof Double || value instanceof BigDecimal;
 	}
 
 	/**
-	 * Check if this is a big number (a {@link BigInteger} or a {@link BigDecimal}).
+	 * Check if the inner value is a big number (a {@link BigInteger} or a {@link BigDecimal}).
 	 */
 	public boolean isBig() {
 		return value instanceof BigInteger || value instanceof BigDecimal;
 	}
 
 	/**
-	 * Return a {@link Number}. The number returned can only be a {@link Long}, a {@link Double}, a {@link BigInteger}
-	 * or a {@link BigDecimal}.
+	 * Return a {@link Number}. Note that the return value can only be a {@link Long}, a {@link Double}, a
+	 * {@link BigInteger} or a {@link BigDecimal}.
 	 */
 	public @NotNull Number getValue() {
 		return value;
 	}
 
 	/**
-	 * Return a {@link Long} or {@code null}.
+	 * Return a {@link Long} or {@code null} if the inner value is not a {@link Long}. Note that if the inner value is a
+	 * {@link BigInteger}, this method still returns {@code null}.
 	 */
 	public @Nullable Long getValueAsLong() {
 		return value instanceof Long ? (Long) value : null;
 	}
 
 	/**
-	 * Return a {@link Double} or {@code null}.
+	 * Return a {@link Double} or {@code null} if the inner value is not a {@link Double}. Note that if the inner value
+	 * is a {@link BigDecimal}, this method still returns {@code null}.
 	 */
 	public @Nullable Double getValueAsDouble() {
 		return value instanceof Double ? (Double) value : null;
 	}
 
 	/**
-	 * Return a {@link BigInteger} or {@code null}. If the inner value is a {@link Long}, this method create a
-	 * {@link BigInteger} from it.
+	 * Return a {@link BigInteger} or {@code null} if the inner value is a decimal (The {@link #isDecimal()} check
+	 * returns {@code true}). If the inner value is a {@link Long}, this method create a {@link BigInteger} from it.
 	 */
 	public @Nullable BigInteger getValueAsBigInteger() {
 		return value instanceof BigInteger
@@ -149,7 +158,8 @@ public final class JsonNumber extends Number implements JsonElement, JsonToken {
 	}
 
 	/**
-	 * Return a {@link BigDecimal} or {@code null}. If the inner value is a {@link Double}, this method create a
+	 * Return a {@link BigDecimal} or {@code null} if the inner value is an integer (The {@link #isInteger()} check
+	 * returns {@code true}). If the inner value is a {@link Double}, this method create a
 	 * {@link BigDecimal} from it.
 	 */
 	public @Nullable BigDecimal getValueAsBigDecimal() {
