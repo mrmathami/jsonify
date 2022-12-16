@@ -197,7 +197,7 @@ public class JsonReader implements JsonInput {
 	 */
 	private void ensureOpenAndValid() throws IOException {
 		if (state == STATE_CLOSED) throw new IOException("Already closed!");
-		if (state == STATE_ERROR) throw new JsonException("Reader is in error state!");
+		if (state == STATE_ERROR) throw new JsonIOException("Reader is in error state!");
 	}
 
 	/**
@@ -235,11 +235,11 @@ public class JsonReader implements JsonInput {
 						if (state == STATE_OBJECT_BEGIN_EXPECT_NAME_OR_OBJECT_END) {
 							this.state = STATE_OBJECT_END;
 						} else {
-							throw new JsonException("Unexpected closing character!");
+							throw new JsonIOException("Unexpected closing character!");
 						}
 						return JsonTokens.OBJECT_END;
 					}
-					throw new JsonException("Unexpected character when parsing input JSON!");
+					throw new JsonIOException("Unexpected character when parsing input JSON!");
 				}
 				case STATE_EXPECT_VALUE:
 				case STATE_ARRAY_BEGIN_EXPECT_VALUE_OR_ARRAY_END: {
@@ -278,7 +278,7 @@ public class JsonReader implements JsonInput {
 						if (state == STATE_ARRAY_BEGIN_EXPECT_VALUE_OR_ARRAY_END && lastStructureIndex >= 0) {
 							this.state = STATE_ARRAY_END;
 						} else {
-							throw new JsonException("Unexpected array closing character!");
+							throw new JsonIOException("Unexpected array closing character!");
 						}
 						return JsonTokens.ARRAY_END;
 					} else if (c == '{') {
@@ -288,9 +288,9 @@ public class JsonReader implements JsonInput {
 						lastStructures.clear(++this.lastStructureIndex);
 						return JsonTokens.OBJECT_BEGIN;
 					} else if (c < 0) {
-						throw new JsonException("Empty JSON document is invalid!");
+						throw new JsonIOException("Empty JSON document is invalid!");
 					}
-					throw new JsonException("Unexpected character when parsing input JSON!");
+					throw new JsonIOException("Unexpected character when parsing input JSON!");
 				}
 				case STATE_ARRAY_END:
 					return JsonTokens.ARRAY_END;
@@ -299,7 +299,7 @@ public class JsonReader implements JsonInput {
 				case STATE_EXPECT_DOCUMENT_END:
 					final int c = readNonWhitespace();
 					if (c < 0) return JsonTokens.EOF;
-					throw new JsonException("Unexpected character at the end of the document!");
+					throw new JsonIOException("Unexpected character at the end of the document!");
 				default:
 					throw new AssertionError();
 			}
@@ -327,17 +327,17 @@ public class JsonReader implements JsonInput {
 				if (lastStructures.get(lastStructureIndex)) {
 					this.state = STATE_ARRAY_END;
 				} else {
-					throw new JsonException("Invalid closing character for object!");
+					throw new JsonIOException("Invalid closing character for object!");
 				}
 			} else if (c == '}') {
 				// end of object. Checking the closing character...
 				if (!lastStructures.get(lastStructureIndex)) {
 					this.state = STATE_OBJECT_END;
 				} else {
-					throw new JsonException("Invalid closing character for array!");
+					throw new JsonIOException("Invalid closing character for array!");
 				}
 			} else {
-				throw new JsonException("Unexpected character after a value!");
+				throw new JsonIOException("Unexpected character after a value!");
 			}
 		} else {
 			// the reader is at the top level, expect an EOF
@@ -369,7 +369,7 @@ public class JsonReader implements JsonInput {
 				c = read();
 			} while (c >= '0' && c <= '9');
 		} else {
-			throw new JsonException("Invalid character in integer part of number!");
+			throw new JsonIOException("Invalid character in integer part of number!");
 		}
 		// second part: fraction
 		if (c == '.') {
@@ -385,7 +385,7 @@ public class JsonReader implements JsonInput {
 					c = read();
 				} while (c >= '0' && c <= '9');
 			} else {
-				throw new JsonException("Invalid character in fraction part of number!");
+				throw new JsonIOException("Invalid character in fraction part of number!");
 			}
 		}
 		// third part: exponent
@@ -407,7 +407,7 @@ public class JsonReader implements JsonInput {
 					c = read();
 				} while (c >= '0' && c <= '9');
 			} else {
-				throw new JsonException("Invalid character in exponent part of number!");
+				throw new JsonIOException("Invalid character in exponent part of number!");
 			}
 		}
 		undo(c);
@@ -455,17 +455,17 @@ public class JsonReader implements JsonInput {
 						} else if (e >= 'a' && e <= 'f') {
 							result = (result << 4) + e - 'a' + 10;
 						} else {
-							throw new JsonException("Invalid escape sequence in string!");
+							throw new JsonIOException("Invalid escape sequence in string!");
 						}
 					} while (result < 0x10000);
 					builder.appendCodePoint(result - 0x10000);
 				} else {
-					throw new JsonException("Invalid escape sequence in string!");
+					throw new JsonIOException("Invalid escape sequence in string!");
 				}
 			} else if (c == '"') {
 				return builder.toString();
 			} else {
-				throw new JsonException("Invalid character in string!");
+				throw new JsonIOException("Invalid character in string!");
 			}
 		}
 	}
@@ -475,8 +475,8 @@ public class JsonReader implements JsonInput {
 	 * {@link JsonTokens#ARRAY_END} or {@link JsonTokens#OBJECT_END}.
 	 *
 	 * @throws IllegalStateException Throws if the parser is not currently inside an array or an object.
-	 * @throws JsonException Throws if there is any error while parsing input JSON.
-	 * @throws IOException Throws if there is any error while reading input JSON.
+	 * @throws JsonIOException       Throws if there is any error while parsing input JSON.
+	 * @throws IOException           Throws if there is any error while reading input JSON.
 	 */
 	public void endStructure() throws IOException {
 		ensureOpenAndValid();
@@ -520,7 +520,7 @@ public class JsonReader implements JsonInput {
 	 * </ul>
 	 *
 	 * @throws IllegalStateException Throws if the previous token is not the beginning of a structure..
-	 * @throws JsonException Throws if there is any error while parsing input JSON.
+	 * @throws JsonIOException Throws if there is any error while parsing input JSON.
 	 * @throws IOException Throws if there is any error while reading input JSON.
 	 */
 	@Override

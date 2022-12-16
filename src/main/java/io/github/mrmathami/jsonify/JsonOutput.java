@@ -26,67 +26,67 @@ import java.math.BigInteger;
 
 public interface JsonOutput extends Closeable {
 	/**
-	 * Begin an array. Throws {@link JsonException} if this is unexpected.
+	 * Begin an array. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	void beginArray() throws IOException;
 
 	/**
-	 * Begin an object. Throws {@link JsonException} if this is unexpected.
+	 * Begin an object. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	void beginObject() throws IOException;
 
 	/**
-	 * End an array or an object. Throws {@link JsonException} if this is unexpected.
+	 * End an array or an object. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	void end() throws IOException;
 
 	/**
-	 * Write a name. Throws {@link JsonException} if this is unexpected.
+	 * Write a name. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	void name(@NotNull String name) throws IOException;
 
 	/**
-	 * Write a boolean value. Throws {@link JsonException} if this is unexpected.
+	 * Write a boolean value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	void valueBoolean(boolean value) throws IOException;
 
 	/**
-	 * Write a integer number value. Throws {@link JsonException} if this is unexpected.
+	 * Write a integer number value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	void valueNumber(long value) throws IOException;
 
 	/**
-	 * Write a decimal number value. Throws {@link JsonException} if this is unexpected.
+	 * Write a decimal number value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	void valueNumber(double value) throws IOException;
 
 	/**
-	 * Write a big integer number value. Throws {@link JsonException} if this is unexpected.
+	 * Write a big integer number value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	void valueNumber(@NotNull BigInteger value) throws IOException;
 
 	/**
-	 * Write a big decimal number value. Throws {@link JsonException} if this is unexpected.
+	 * Write a big decimal number value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	void valueNumber(@NotNull BigDecimal value) throws IOException;
 
 	/**
-	 * Write a string value. Throws {@link JsonException} if this is unexpected.
+	 * Write a string value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	void valueString(char value) throws IOException;
 
 	/**
-	 * Write a string value. Throws {@link JsonException} if this is unexpected.
+	 * Write a string value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	void valueString(@NotNull String value) throws IOException;
 
 	/**
-	 * Write a null value. Throws {@link JsonException} if this is unexpected.
+	 * Write a null value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	void valueNull() throws IOException;
 
 	/**
-	 * Write a {@link JsonElement} value. Throws {@link JsonException} if this is unexpected.
+	 * Write a {@link JsonElement} value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	void value(@NotNull JsonElement element) throws IOException;
 }
