@@ -45,4 +45,8 @@ public final class JsonString implements JsonElement, JsonToken {
 	public @NotNull String toString() {
 		return value;
 	}
+
+	public @Nullable Character toCharacter() {
+		return value.length() == 1 ? value.charAt(0) : null;
+	}
 }
