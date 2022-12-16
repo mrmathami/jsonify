@@ -72,41 +72,81 @@ public final class JsonArray extends ArrayList<@NotNull JsonElement> implements 
 
 	public @Nullable Boolean getAsBoolean(int index) {
 		final JsonElement element = get(index);
-		return element instanceof JsonKeyword && element != JsonKeyword.NULL ? element == JsonKeyword.TRUE : null;
+		if (element == JsonKeyword.NULL) return null;
+		if (element == JsonKeyword.TRUE) return Boolean.TRUE;
+		if (element == JsonKeyword.FALSE) return Boolean.FALSE;
+		throw new IllegalArgumentException("Not a Boolean!");
 	}
 
 	public @Nullable String getAsString(int index) {
 		final JsonElement element = get(index);
-		return element instanceof JsonString ? element.toString() : null;
+		if (element == JsonKeyword.NULL) return null;
+		if (element instanceof JsonString) return element.toString();
+		throw new IllegalArgumentException("Not a String!");
 	}
 
 	public @Nullable Character getAsCharacter(int index) {
 		final JsonElement element = get(index);
-		return element instanceof JsonString ? ((JsonString) element).toCharacter() : null;
+		if (element == JsonKeyword.NULL) return null;
+		if (element instanceof JsonString) {
+			final JsonString string = (JsonString) element;
+			final Character character = string.toCharacter();
+			if (character != null) return character;
+		}
+		throw new IllegalArgumentException("Not a Character!");
 	}
 
 	public @Nullable Number getAsNumber(int index) {
 		final JsonElement element = get(index);
-		return element instanceof JsonNumber ? ((JsonNumber) element).getValue() : null;
+		if (element == JsonKeyword.NULL) return null;
+		if (element instanceof JsonNumber) {
+			final JsonNumber number = (JsonNumber) element;
+			return number.getValue();
+		}
+		throw new IllegalArgumentException("Not a Number!");
 	}
 
 	public @Nullable Long getAsLong(int index) {
 		final JsonElement element = get(index);
-		return element instanceof JsonNumber ? ((JsonNumber) element).getValueAsLong() : null;
+		if (element == JsonKeyword.NULL) return null;
+		if (element instanceof JsonNumber) {
+			final JsonNumber number = (JsonNumber) element;
+			final Long value = number.getAsLong();
+			if (value != null) return value;
+		}
+		throw new IllegalArgumentException("Not a Long!");
 	}
 
 	public @Nullable Double getAsDouble(int index) {
 		final JsonElement element = get(index);
-		return element instanceof JsonNumber ? ((JsonNumber) element).getValueAsDouble() : null;
+		if (element == JsonKeyword.NULL) return null;
+		if (element instanceof JsonNumber) {
+			final JsonNumber number = (JsonNumber) element;
+			final Double value = number.getAsDouble();
+			if (value != null) return value;
+		}
+		throw new IllegalArgumentException("Not a Double!");
 	}
 
 	public @Nullable BigInteger getAsBigInteger(int index) {
 		final JsonElement element = get(index);
-		return element instanceof JsonNumber ? ((JsonNumber) element).getValueAsBigInteger() : null;
+		if (element == JsonKeyword.NULL) return null;
+		if (element instanceof JsonNumber) {
+			final JsonNumber number = (JsonNumber) element;
+			final BigInteger value = number.getAsBigInteger();
+			if (value != null) return value;
+		}
+		throw new IllegalArgumentException("Not a BigInteger!");
 	}
 
 	public @Nullable BigDecimal getAsBigDecimal(int index) {
 		final JsonElement element = get(index);
-		return element instanceof JsonNumber ? ((JsonNumber) element).getValueAsBigDecimal() : null;
+		if (element == JsonKeyword.NULL) return null;
+		if (element instanceof JsonNumber) {
+			final JsonNumber number = (JsonNumber) element;
+			final BigDecimal value = number.getAsBigDecimal();
+			if (value != null) return value;
+		}
+		throw new IllegalArgumentException("Not a BigDecimal");
 	}
 }
