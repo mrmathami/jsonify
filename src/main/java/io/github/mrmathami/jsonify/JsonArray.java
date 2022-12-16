@@ -25,87 +25,87 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 public final class JsonArray extends ArrayList<@NotNull JsonElement> implements JsonElement {
-	public boolean addValue(boolean value) {
+	public boolean add(boolean value) {
 		return add(JsonKeyword.of(value));
 	}
 
-	public boolean addValue(@Nullable Boolean value) {
+	public boolean add(@Nullable Boolean value) {
 		return add(JsonKeyword.of(value));
 	}
 
-	public boolean addValue(char value) {
+	public boolean add(char value) {
 		return add(new JsonString(value));
 	}
 
-	public boolean addValue(@Nullable Character value) {
+	public boolean add(@Nullable Character value) {
 		return add(value != null ? new JsonString(value) : JsonKeyword.NULL);
 	}
 
-	public boolean addValue(@Nullable String value) {
+	public boolean add(@Nullable String value) {
 		return add(value != null ? new JsonString(value) : JsonKeyword.NULL);
 	}
 
-	public boolean addValue(long value) {
+	public boolean add(long value) {
 		return add(new JsonNumber(value));
 	}
 
-	public boolean addValue(@Nullable Long value) {
+	public boolean add(@Nullable Long value) {
 		return add(value != null ? new JsonNumber(value) : JsonKeyword.NULL);
 	}
 
-	public boolean addValue(double value) {
+	public boolean add(double value) {
 		return add(new JsonNumber(value));
 	}
 
-	public boolean addValue(@Nullable Double value) {
+	public boolean add(@Nullable Double value) {
 		return add(value != null ? new JsonNumber(value) : JsonKeyword.NULL);
 	}
 
-	public boolean addValue(@Nullable BigInteger value) {
+	public boolean add(@Nullable BigInteger value) {
 		return add(value != null ? new JsonNumber(value) : JsonKeyword.NULL);
 	}
 
-	public boolean addValue(@Nullable BigDecimal value) {
+	public boolean add(@Nullable BigDecimal value) {
 		return add(value != null ? new JsonNumber(value) : JsonKeyword.NULL);
 	}
 
 
-	public @Nullable Boolean getValueAsBoolean(int index) {
+	public @Nullable Boolean getAsBoolean(int index) {
 		final JsonElement element = get(index);
 		return element instanceof JsonKeyword && element != JsonKeyword.NULL ? element == JsonKeyword.TRUE : null;
 	}
 
-	public @Nullable String getValueAsString(int index) {
+	public @Nullable String getAsString(int index) {
 		final JsonElement element = get(index);
 		return element instanceof JsonString ? element.toString() : null;
 	}
 
-	public @Nullable Character getValueAsCharacter(int index) {
+	public @Nullable Character getAsCharacter(int index) {
 		final JsonElement element = get(index);
 		return element instanceof JsonString ? ((JsonString) element).toCharacter() : null;
 	}
 
-	public @Nullable Number getValueAsNumber(int index) {
+	public @Nullable Number getAsNumber(int index) {
 		final JsonElement element = get(index);
 		return element instanceof JsonNumber ? ((JsonNumber) element).getValue() : null;
 	}
 
-	public @Nullable Long getValueAsLong(int index) {
+	public @Nullable Long getAsLong(int index) {
 		final JsonElement element = get(index);
 		return element instanceof JsonNumber ? ((JsonNumber) element).getValueAsLong() : null;
 	}
 
-	public @Nullable Double getValueAsDouble(int index) {
+	public @Nullable Double getAsDouble(int index) {
 		final JsonElement element = get(index);
 		return element instanceof JsonNumber ? ((JsonNumber) element).getValueAsDouble() : null;
 	}
 
-	public @Nullable BigInteger getValueAsBigInteger(int index) {
+	public @Nullable BigInteger getAsBigInteger(int index) {
 		final JsonElement element = get(index);
 		return element instanceof JsonNumber ? ((JsonNumber) element).getValueAsBigInteger() : null;
 	}
 
-	public @Nullable BigDecimal getValueAsBigDecimal(int index) {
+	public @Nullable BigDecimal getAsBigDecimal(int index) {
 		final JsonElement element = get(index);
 		return element instanceof JsonNumber ? ((JsonNumber) element).getValueAsBigDecimal() : null;
 	}

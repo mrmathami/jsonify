@@ -133,7 +133,7 @@ public final class JsonNumber extends Number implements JsonElement, JsonToken {
 	 * Return a {@link Long} or {@code null} if the inner value is not a {@link Long}. Note that if the inner value is a
 	 * {@link BigInteger}, this method still returns {@code null}.
 	 */
-	public @Nullable Long getValueAsLong() {
+	public @Nullable Long getAsLong() {
 		return value instanceof Long ? (Long) value : null;
 	}
 
@@ -141,7 +141,7 @@ public final class JsonNumber extends Number implements JsonElement, JsonToken {
 	 * Return a {@link Double} or {@code null} if the inner value is not a {@link Double}. Note that if the inner value
 	 * is a {@link BigDecimal}, this method still returns {@code null}.
 	 */
-	public @Nullable Double getValueAsDouble() {
+	public @Nullable Double getAsDouble() {
 		return value instanceof Double ? (Double) value : null;
 	}
 
@@ -149,7 +149,7 @@ public final class JsonNumber extends Number implements JsonElement, JsonToken {
 	 * Return a {@link BigInteger} or {@code null} if the inner value is a decimal (The {@link #isDecimal()} check
 	 * returns {@code true}). If the inner value is a {@link Long}, this method create a {@link BigInteger} from it.
 	 */
-	public @Nullable BigInteger getValueAsBigInteger() {
+	public @Nullable BigInteger getAsBigInteger() {
 		return value instanceof BigInteger
 				? (BigInteger) value
 				: value instanceof Long
@@ -162,7 +162,7 @@ public final class JsonNumber extends Number implements JsonElement, JsonToken {
 	 * returns {@code true}). If the inner value is a {@link Double}, this method create a
 	 * {@link BigDecimal} from it.
 	 */
-	public @Nullable BigDecimal getValueAsBigDecimal() {
+	public @Nullable BigDecimal getAsBigDecimal() {
 		return value instanceof BigDecimal
 				? (BigDecimal) value
 				: value instanceof Double
