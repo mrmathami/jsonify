@@ -75,14 +75,14 @@ public final class JsonArray extends ArrayList<@NotNull JsonElement> implements 
 		if (element == JsonKeyword.NULL) return null;
 		if (element == JsonKeyword.TRUE) return Boolean.TRUE;
 		if (element == JsonKeyword.FALSE) return Boolean.FALSE;
-		throw new IllegalArgumentException("Not a Boolean!");
+		throw new JsonValueException("Not a Boolean!");
 	}
 
 	public @Nullable String getAsString(int index) {
 		final JsonElement element = get(index);
 		if (element == JsonKeyword.NULL) return null;
 		if (element instanceof JsonString) return element.toString();
-		throw new IllegalArgumentException("Not a String!");
+		throw new JsonValueException("Not a String!");
 	}
 
 	public @Nullable Character getAsCharacter(int index) {
@@ -93,7 +93,7 @@ public final class JsonArray extends ArrayList<@NotNull JsonElement> implements 
 			final Character character = string.toCharacter();
 			if (character != null) return character;
 		}
-		throw new IllegalArgumentException("Not a Character!");
+		throw new JsonValueException("Not a Character!");
 	}
 
 	public @Nullable Number getAsNumber(int index) {
@@ -103,7 +103,7 @@ public final class JsonArray extends ArrayList<@NotNull JsonElement> implements 
 			final JsonNumber number = (JsonNumber) element;
 			return number.getValue();
 		}
-		throw new IllegalArgumentException("Not a Number!");
+		throw new JsonValueException("Not a Number!");
 	}
 
 	public @Nullable Long getAsLong(int index) {
@@ -114,7 +114,7 @@ public final class JsonArray extends ArrayList<@NotNull JsonElement> implements 
 			final Long value = number.getAsLong();
 			if (value != null) return value;
 		}
-		throw new IllegalArgumentException("Not a Long!");
+		throw new JsonValueException("Not a Long!");
 	}
 
 	public @Nullable Double getAsDouble(int index) {
@@ -125,7 +125,7 @@ public final class JsonArray extends ArrayList<@NotNull JsonElement> implements 
 			final Double value = number.getAsDouble();
 			if (value != null) return value;
 		}
-		throw new IllegalArgumentException("Not a Double!");
+		throw new JsonValueException("Not a Double!");
 	}
 
 	public @Nullable BigInteger getAsBigInteger(int index) {
@@ -136,7 +136,7 @@ public final class JsonArray extends ArrayList<@NotNull JsonElement> implements 
 			final BigInteger value = number.getAsBigInteger();
 			if (value != null) return value;
 		}
-		throw new IllegalArgumentException("Not a BigInteger!");
+		throw new JsonValueException("Not a BigInteger!");
 	}
 
 	public @Nullable BigDecimal getAsBigDecimal(int index) {
@@ -147,6 +147,6 @@ public final class JsonArray extends ArrayList<@NotNull JsonElement> implements 
 			final BigDecimal value = number.getAsBigDecimal();
 			if (value != null) return value;
 		}
-		throw new IllegalArgumentException("Not a BigDecimal");
+		throw new JsonValueException("Not a BigDecimal");
 	}
 }

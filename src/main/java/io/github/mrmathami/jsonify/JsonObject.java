@@ -75,14 +75,14 @@ public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull Js
 		if (element == null || element == JsonKeyword.NULL) return null;
 		if (element == JsonKeyword.TRUE) return Boolean.TRUE;
 		if (element == JsonKeyword.FALSE) return Boolean.FALSE;
-		throw new IllegalArgumentException("Not a Boolean!");
+		throw new JsonValueException("Not a Boolean!");
 	}
 
 	public @Nullable String getAsString(@NotNull String key) {
 		final JsonElement element = get(key);
 		if (element == null || element == JsonKeyword.NULL) return null;
 		if (element instanceof JsonString) return element.toString();
-		throw new IllegalArgumentException("Not a String!");
+		throw new JsonValueException("Not a String!");
 	}
 
 	public @Nullable Character getAsCharacter(@NotNull String key) {
@@ -93,7 +93,7 @@ public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull Js
 			final Character character = string.toCharacter();
 			if (character != null) return character;
 		}
-		throw new IllegalArgumentException("Not a Character!");
+		throw new JsonValueException("Not a Character!");
 	}
 
 	public @Nullable Number getAsNumber(@NotNull String key) {
@@ -103,7 +103,7 @@ public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull Js
 			final JsonNumber number = (JsonNumber) element;
 			return number.getValue();
 		}
-		throw new IllegalArgumentException("Not a Number!");
+		throw new JsonValueException("Not a Number!");
 	}
 
 	public @Nullable Long getAsLong(@NotNull String key) {
@@ -114,7 +114,7 @@ public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull Js
 			final Long value = number.getAsLong();
 			if (value != null) return value;
 		}
-		throw new IllegalArgumentException("Not a Long!");
+		throw new JsonValueException("Not a Long!");
 	}
 
 	public @Nullable Double getAsDouble(@NotNull String key) {
@@ -125,7 +125,7 @@ public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull Js
 			final Double value = number.getAsDouble();
 			if (value != null) return value;
 		}
-		throw new IllegalArgumentException("Not a Double!");
+		throw new JsonValueException("Not a Double!");
 	}
 
 	public @Nullable BigInteger getAsBigInteger(@NotNull String key) {
@@ -136,7 +136,7 @@ public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull Js
 			final BigInteger value = number.getAsBigInteger();
 			if (value != null) return value;
 		}
-		throw new IllegalArgumentException("Not a BigInteger!");
+		throw new JsonValueException("Not a BigInteger!");
 	}
 
 	public @Nullable BigDecimal getAsBigDecimal(@NotNull String key) {
@@ -147,6 +147,6 @@ public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull Js
 			final BigDecimal value = number.getAsBigDecimal();
 			if (value != null) return value;
 		}
-		throw new IllegalArgumentException("Not a BigDecimal");
+		throw new JsonValueException("Not a BigDecimal");
 	}
 }
