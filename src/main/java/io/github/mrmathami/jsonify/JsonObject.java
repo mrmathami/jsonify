@@ -72,7 +72,7 @@ public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull Js
 
 	public @Nullable Boolean getAsBoolean(@NotNull String key) {
 		final JsonElement element = get(key);
-		if (element == JsonKeyword.NULL) return null;
+		if (element == null || element == JsonKeyword.NULL) return null;
 		if (element == JsonKeyword.TRUE) return Boolean.TRUE;
 		if (element == JsonKeyword.FALSE) return Boolean.FALSE;
 		throw new IllegalArgumentException("Not a Boolean!");
@@ -80,14 +80,14 @@ public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull Js
 
 	public @Nullable String getAsString(@NotNull String key) {
 		final JsonElement element = get(key);
-		if (element == JsonKeyword.NULL) return null;
+		if (element == null || element == JsonKeyword.NULL) return null;
 		if (element instanceof JsonString) return element.toString();
 		throw new IllegalArgumentException("Not a String!");
 	}
 
 	public @Nullable Character getAsCharacter(@NotNull String key) {
 		final JsonElement element = get(key);
-		if (element == JsonKeyword.NULL) return null;
+		if (element == null || element == JsonKeyword.NULL) return null;
 		if (element instanceof JsonString) {
 			final JsonString string = (JsonString) element;
 			final Character character = string.toCharacter();
@@ -98,7 +98,7 @@ public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull Js
 
 	public @Nullable Number getAsNumber(@NotNull String key) {
 		final JsonElement element = get(key);
-		if (element == JsonKeyword.NULL) return null;
+		if (element == null || element == JsonKeyword.NULL) return null;
 		if (element instanceof JsonNumber) {
 			final JsonNumber number = (JsonNumber) element;
 			return number.getValue();
@@ -108,7 +108,7 @@ public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull Js
 
 	public @Nullable Long getAsLong(@NotNull String key) {
 		final JsonElement element = get(key);
-		if (element == JsonKeyword.NULL) return null;
+		if (element == null || element == JsonKeyword.NULL) return null;
 		if (element instanceof JsonNumber) {
 			final JsonNumber number = (JsonNumber) element;
 			final Long value = number.getAsLong();
@@ -119,7 +119,7 @@ public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull Js
 
 	public @Nullable Double getAsDouble(@NotNull String key) {
 		final JsonElement element = get(key);
-		if (element == JsonKeyword.NULL) return null;
+		if (element == null || element == JsonKeyword.NULL) return null;
 		if (element instanceof JsonNumber) {
 			final JsonNumber number = (JsonNumber) element;
 			final Double value = number.getAsDouble();
@@ -130,7 +130,7 @@ public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull Js
 
 	public @Nullable BigInteger getAsBigInteger(@NotNull String key) {
 		final JsonElement element = get(key);
-		if (element == JsonKeyword.NULL) return null;
+		if (element == null || element == JsonKeyword.NULL) return null;
 		if (element instanceof JsonNumber) {
 			final JsonNumber number = (JsonNumber) element;
 			final BigInteger value = number.getAsBigInteger();
@@ -141,7 +141,7 @@ public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull Js
 
 	public @Nullable BigDecimal getAsBigDecimal(@NotNull String key) {
 		final JsonElement element = get(key);
-		if (element == JsonKeyword.NULL) return null;
+		if (element == null || element == JsonKeyword.NULL) return null;
 		if (element instanceof JsonNumber) {
 			final JsonNumber number = (JsonNumber) element;
 			final BigDecimal value = number.getAsBigDecimal();
