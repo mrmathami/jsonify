@@ -71,82 +71,34 @@ public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull Js
 
 
 	public @Nullable Boolean getAsBoolean(@NotNull String key) {
-		final JsonElement element = get(key);
-		if (element == null || element == JsonKeyword.NULL) return null;
-		if (element == JsonKeyword.TRUE) return Boolean.TRUE;
-		if (element == JsonKeyword.FALSE) return Boolean.FALSE;
-		throw new JsonValueException("Not a Boolean!");
+		return Jsonify.toBoolean(get(key));
 	}
 
 	public @Nullable String getAsString(@NotNull String key) {
-		final JsonElement element = get(key);
-		if (element == null || element == JsonKeyword.NULL) return null;
-		if (element instanceof JsonString) return element.toString();
-		throw new JsonValueException("Not a String!");
+		return Jsonify.toString(get(key));
 	}
 
 	public @Nullable Character getAsCharacter(@NotNull String key) {
-		final JsonElement element = get(key);
-		if (element == null || element == JsonKeyword.NULL) return null;
-		if (element instanceof JsonString) {
-			final JsonString string = (JsonString) element;
-			final Character character = string.toCharacter();
-			if (character != null) return character;
-		}
-		throw new JsonValueException("Not a Character!");
+		return Jsonify.toCharacter(get(key));
 	}
 
 	public @Nullable Number getAsNumber(@NotNull String key) {
-		final JsonElement element = get(key);
-		if (element == null || element == JsonKeyword.NULL) return null;
-		if (element instanceof JsonNumber) {
-			final JsonNumber number = (JsonNumber) element;
-			return number.getValue();
-		}
-		throw new JsonValueException("Not a Number!");
+		return Jsonify.toNumber(get(key));
 	}
 
 	public @Nullable Long getAsLong(@NotNull String key) {
-		final JsonElement element = get(key);
-		if (element == null || element == JsonKeyword.NULL) return null;
-		if (element instanceof JsonNumber) {
-			final JsonNumber number = (JsonNumber) element;
-			final Long value = number.getAsLong();
-			if (value != null) return value;
-		}
-		throw new JsonValueException("Not a Long!");
+		return Jsonify.toLong(get(key));
 	}
 
 	public @Nullable Double getAsDouble(@NotNull String key) {
-		final JsonElement element = get(key);
-		if (element == null || element == JsonKeyword.NULL) return null;
-		if (element instanceof JsonNumber) {
-			final JsonNumber number = (JsonNumber) element;
-			final Double value = number.getAsDouble();
-			if (value != null) return value;
-		}
-		throw new JsonValueException("Not a Double!");
+		return Jsonify.toDouble(get(key));
 	}
 
 	public @Nullable BigInteger getAsBigInteger(@NotNull String key) {
-		final JsonElement element = get(key);
-		if (element == null || element == JsonKeyword.NULL) return null;
-		if (element instanceof JsonNumber) {
-			final JsonNumber number = (JsonNumber) element;
-			final BigInteger value = number.getAsBigInteger();
-			if (value != null) return value;
-		}
-		throw new JsonValueException("Not a BigInteger!");
+		return Jsonify.toBigInteger(get(key));
 	}
 
 	public @Nullable BigDecimal getAsBigDecimal(@NotNull String key) {
-		final JsonElement element = get(key);
-		if (element == null || element == JsonKeyword.NULL) return null;
-		if (element instanceof JsonNumber) {
-			final JsonNumber number = (JsonNumber) element;
-			final BigDecimal value = number.getAsBigDecimal();
-			if (value != null) return value;
-		}
-		throw new JsonValueException("Not a BigDecimal");
+		return Jsonify.toBigDecimal(get(key));
 	}
 }

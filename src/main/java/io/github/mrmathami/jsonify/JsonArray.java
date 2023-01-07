@@ -71,82 +71,34 @@ public final class JsonArray extends ArrayList<@NotNull JsonElement> implements 
 
 
 	public @Nullable Boolean getAsBoolean(int index) {
-		final JsonElement element = get(index);
-		if (element == JsonKeyword.NULL) return null;
-		if (element == JsonKeyword.TRUE) return Boolean.TRUE;
-		if (element == JsonKeyword.FALSE) return Boolean.FALSE;
-		throw new JsonValueException("Not a Boolean!");
+		return Jsonify.toBoolean(get(index));
 	}
 
 	public @Nullable String getAsString(int index) {
-		final JsonElement element = get(index);
-		if (element == JsonKeyword.NULL) return null;
-		if (element instanceof JsonString) return element.toString();
-		throw new JsonValueException("Not a String!");
+		return Jsonify.toString(get(index));
 	}
 
 	public @Nullable Character getAsCharacter(int index) {
-		final JsonElement element = get(index);
-		if (element == JsonKeyword.NULL) return null;
-		if (element instanceof JsonString) {
-			final JsonString string = (JsonString) element;
-			final Character character = string.toCharacter();
-			if (character != null) return character;
-		}
-		throw new JsonValueException("Not a Character!");
+		return Jsonify.toCharacter(get(index));
 	}
 
 	public @Nullable Number getAsNumber(int index) {
-		final JsonElement element = get(index);
-		if (element == JsonKeyword.NULL) return null;
-		if (element instanceof JsonNumber) {
-			final JsonNumber number = (JsonNumber) element;
-			return number.getValue();
-		}
-		throw new JsonValueException("Not a Number!");
+		return Jsonify.toNumber(get(index));
 	}
 
 	public @Nullable Long getAsLong(int index) {
-		final JsonElement element = get(index);
-		if (element == JsonKeyword.NULL) return null;
-		if (element instanceof JsonNumber) {
-			final JsonNumber number = (JsonNumber) element;
-			final Long value = number.getAsLong();
-			if (value != null) return value;
-		}
-		throw new JsonValueException("Not a Long!");
+		return Jsonify.toLong(get(index));
 	}
 
 	public @Nullable Double getAsDouble(int index) {
-		final JsonElement element = get(index);
-		if (element == JsonKeyword.NULL) return null;
-		if (element instanceof JsonNumber) {
-			final JsonNumber number = (JsonNumber) element;
-			final Double value = number.getAsDouble();
-			if (value != null) return value;
-		}
-		throw new JsonValueException("Not a Double!");
+		return Jsonify.toDouble(get(index));
 	}
 
 	public @Nullable BigInteger getAsBigInteger(int index) {
-		final JsonElement element = get(index);
-		if (element == JsonKeyword.NULL) return null;
-		if (element instanceof JsonNumber) {
-			final JsonNumber number = (JsonNumber) element;
-			final BigInteger value = number.getAsBigInteger();
-			if (value != null) return value;
-		}
-		throw new JsonValueException("Not a BigInteger!");
+		return Jsonify.toBigInteger(get(index));
 	}
 
 	public @Nullable BigDecimal getAsBigDecimal(int index) {
-		final JsonElement element = get(index);
-		if (element == JsonKeyword.NULL) return null;
-		if (element instanceof JsonNumber) {
-			final JsonNumber number = (JsonNumber) element;
-			final BigDecimal value = number.getAsBigDecimal();
-			if (value != null) return value;
-		}
-		throw new JsonValueException("Not a BigDecimal");
+		return Jsonify.toBigDecimal(get(index));
 	}
 }
