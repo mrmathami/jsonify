@@ -25,47 +25,47 @@ import java.math.BigInteger;
 import java.util.LinkedHashMap;
 
 public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull JsonElement> implements JsonElement {
-	public @Nullable JsonElement put(@NotNull String key, boolean value) {
+	public @Nullable JsonElement putValue(@NotNull String key, boolean value) {
 		return put(key, JsonKeyword.of(value));
 	}
 
-	public @Nullable JsonElement put(@NotNull String key, @Nullable Boolean value) {
+	public @Nullable JsonElement putValue(@NotNull String key, @Nullable Boolean value) {
 		return put(key, JsonKeyword.of(value));
 	}
 
-	public @Nullable JsonElement put(@NotNull String key, char value) {
+	public @Nullable JsonElement putValue(@NotNull String key, char value) {
 		return put(key, new JsonString(value));
 	}
 
-	public @Nullable JsonElement put(@NotNull String key, @Nullable Character value) {
+	public @Nullable JsonElement putValue(@NotNull String key, @Nullable Character value) {
 		return put(key, value != null ? new JsonString(value) : JsonKeyword.NULL);
 	}
 
-	public @Nullable JsonElement put(@NotNull String key, @Nullable String value) {
+	public @Nullable JsonElement putValue(@NotNull String key, @Nullable String value) {
 		return put(key, value != null ? new JsonString(value) : JsonKeyword.NULL);
 	}
 
-	public @Nullable JsonElement put(@NotNull String key, long value) {
+	public @Nullable JsonElement putValue(@NotNull String key, long value) {
 		return put(key, new JsonNumber(value));
 	}
 
-	public @Nullable JsonElement put(@NotNull String key, @Nullable Long value) {
+	public @Nullable JsonElement putValue(@NotNull String key, @Nullable Long value) {
 		return put(key, value != null ? new JsonNumber(value) : JsonKeyword.NULL);
 	}
 
-	public @Nullable JsonElement put(@NotNull String key, double value) {
+	public @Nullable JsonElement putValue(@NotNull String key, double value) {
 		return put(key, new JsonNumber(value));
 	}
 
-	public @Nullable JsonElement put(@NotNull String key, @Nullable Double value) {
+	public @Nullable JsonElement putValue(@NotNull String key, @Nullable Double value) {
 		return put(key, value != null ? new JsonNumber(value) : JsonKeyword.NULL);
 	}
 
-	public @Nullable JsonElement put(@NotNull String key, @Nullable BigInteger value) {
+	public @Nullable JsonElement putValue(@NotNull String key, @Nullable BigInteger value) {
 		return put(key, value != null ? new JsonNumber(value) : JsonKeyword.NULL);
 	}
 
-	public @Nullable JsonElement put(@NotNull String key, @Nullable BigDecimal value) {
+	public @Nullable JsonElement putValue(@NotNull String key, @Nullable BigDecimal value) {
 		return put(key, value != null ? new JsonNumber(value) : JsonKeyword.NULL);
 	}
 

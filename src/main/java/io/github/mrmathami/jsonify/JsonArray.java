@@ -25,47 +25,47 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 public final class JsonArray extends ArrayList<@NotNull JsonElement> implements JsonElement {
-	public boolean add(boolean value) {
+	public boolean addValue(boolean value) {
 		return add(JsonKeyword.of(value));
 	}
 
-	public boolean add(@Nullable Boolean value) {
+	public boolean addValue(@Nullable Boolean value) {
 		return add(JsonKeyword.of(value));
 	}
 
-	public boolean add(char value) {
+	public boolean addValue(char value) {
 		return add(new JsonString(value));
 	}
 
-	public boolean add(@Nullable Character value) {
+	public boolean addValue(@Nullable Character value) {
 		return add(value != null ? new JsonString(value) : JsonKeyword.NULL);
 	}
 
-	public boolean add(@Nullable String value) {
+	public boolean addValue(@Nullable String value) {
 		return add(value != null ? new JsonString(value) : JsonKeyword.NULL);
 	}
 
-	public boolean add(long value) {
+	public boolean addValue(long value) {
 		return add(new JsonNumber(value));
 	}
 
-	public boolean add(@Nullable Long value) {
+	public boolean addValue(@Nullable Long value) {
 		return add(value != null ? new JsonNumber(value) : JsonKeyword.NULL);
 	}
 
-	public boolean add(double value) {
+	public boolean addValue(double value) {
 		return add(new JsonNumber(value));
 	}
 
-	public boolean add(@Nullable Double value) {
+	public boolean addValue(@Nullable Double value) {
 		return add(value != null ? new JsonNumber(value) : JsonKeyword.NULL);
 	}
 
-	public boolean add(@Nullable BigInteger value) {
+	public boolean addValue(@Nullable BigInteger value) {
 		return add(value != null ? new JsonNumber(value) : JsonKeyword.NULL);
 	}
 
-	public boolean add(@Nullable BigDecimal value) {
+	public boolean addValue(@Nullable BigDecimal value) {
 		return add(value != null ? new JsonNumber(value) : JsonKeyword.NULL);
 	}
 
