@@ -70,6 +70,27 @@ public final class JsonObject extends LinkedHashMap<@NotNull String, @NotNull Js
 	}
 
 
+	public @Nullable JsonKeyword getAsJsonKeyword(@NotNull String key) {
+		return Jsonify.toJsonKeyword(get(key));
+	}
+
+	public @Nullable JsonString getAsJsonString(@NotNull String key) {
+		return Jsonify.toJsonString(get(key));
+	}
+
+	public @Nullable JsonNumber getAsJsonNumber(@NotNull String key) {
+		return Jsonify.toJsonNumber(get(key));
+	}
+
+	public @Nullable JsonArray getAsJsonArray(@NotNull String key) {
+		return Jsonify.toJsonArray(get(key));
+	}
+
+	public @Nullable JsonObject getAsJsonObject(@NotNull String key) {
+		return Jsonify.toJsonObject(get(key));
+	}
+
+
 	public @Nullable Boolean getAsBoolean(@NotNull String key) {
 		return Jsonify.toBoolean(get(key));
 	}

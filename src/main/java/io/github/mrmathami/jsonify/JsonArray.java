@@ -70,6 +70,27 @@ public final class JsonArray extends ArrayList<@NotNull JsonElement> implements 
 	}
 
 
+	public @Nullable JsonKeyword getAsJsonKeyword(int index) {
+		return Jsonify.toJsonKeyword(get(index));
+	}
+
+	public @Nullable JsonString getAsJsonString(int index) {
+		return Jsonify.toJsonString(get(index));
+	}
+
+	public @Nullable JsonNumber getAsJsonNumber(int index) {
+		return Jsonify.toJsonNumber(get(index));
+	}
+
+	public @Nullable JsonArray getAsJsonArray(int index) {
+		return Jsonify.toJsonArray(get(index));
+	}
+
+	public @Nullable JsonObject getAsJsonObject(int index) {
+		return Jsonify.toJsonObject(get(index));
+	}
+
+
 	public @Nullable Boolean getAsBoolean(int index) {
 		return Jsonify.toBoolean(get(index));
 	}
