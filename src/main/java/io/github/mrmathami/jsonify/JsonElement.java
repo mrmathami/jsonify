@@ -17,5 +17,5 @@
 
 package io.github.mrmathami.jsonify;
 
-public interface JsonElement {
+public sealed interface JsonElement permits JsonKeyword, JsonString, JsonNumber, JsonArray, JsonObject {
 }
