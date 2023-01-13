@@ -28,8 +28,8 @@ public interface JsonInput extends Closeable {
 	 * returns {@link JsonTokens#ARRAY_END} or {@link JsonTokens#OBJECT_END} repeatedly until {@link #endStructure()} is
 	 * called. Similarly, this method also return {@link JsonTokens#EOF} repeatedly whem.
 	 *
-	 * @throws JsonException Throws if there is any error while parsing input JSON.
-	 * @throws IOException Throws if there is any error while reading input JSON.
+	 * @throws JsonIOException Throws if there is any error while parsing input JSON.
+	 * @throws IOException     Throws if there is any error while reading input JSON.
 	 */
 	@NotNull JsonToken nextToken() throws IOException;
 
@@ -38,7 +38,7 @@ public interface JsonInput extends Closeable {
 	 * {@link JsonTokens#ARRAY_END} or {@link JsonTokens#OBJECT_END}.
 	 *
 	 * @throws IllegalStateException Throws if the parser is not currently inside an array or an object.
-	 * @throws JsonException Throws if there is any error while parsing input JSON.
+	 * @throws JsonIOException Throws if there is any error while parsing input JSON.
 	 * @throws IOException Throws if there is any error while reading input JSON.
 	 */
 	void endStructure() throws IOException;
@@ -56,7 +56,7 @@ public interface JsonInput extends Closeable {
 	 * </ul>
 	 *
 	 * @throws IllegalStateException Throws if the previous token is not the beginning of a structure..
-	 * @throws JsonException Throws if there is any error while parsing input JSON.
+	 * @throws JsonIOException Throws if there is any error while parsing input JSON.
 	 * @throws IOException Throws if there is any error while reading input JSON.
 	 */
 	@NotNull JsonElement parseStructure() throws IOException;

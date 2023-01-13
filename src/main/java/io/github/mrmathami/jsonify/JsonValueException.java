@@ -17,5 +17,17 @@
 
 package io.github.mrmathami.jsonify;
 
-public sealed interface JsonToken permits JsonTokens, JsonName, JsonKeyword, JsonString, JsonNumber {
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * Signals that an exception occurred while converting a JSON value to a Java type.
+ */
+public class JsonValueException extends IllegalArgumentException {
+	public JsonValueException(@NotNull String message) {
+		super(message);
+	}
+
+	public JsonValueException(@NotNull String message, @NotNull Throwable cause) {
+		super(message, cause);
+	}
 }

@@ -22,14 +22,14 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 
 /**
- * jsonify custom exception.
+ * Signals that an exception occurred while reading/writing a JSON document.
  */
-public final class JsonException extends IOException {
-    public JsonException(@NotNull String message) {
+public final class JsonIOException extends IOException {
+    public JsonIOException(@NotNull String message) {
         super(message);
     }
 
-    public JsonException(@NotNull String message, @NotNull Throwable cause) {
+    public JsonIOException(@NotNull String message, @NotNull Throwable cause) {
         super(message, cause);
     }
 }

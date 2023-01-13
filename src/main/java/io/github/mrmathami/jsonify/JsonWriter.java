@@ -143,7 +143,7 @@ public class JsonWriter implements JsonOutput {
 	//========================================
 
 	/**
-	 * Begin an array. Throws {@link JsonException} if this is unexpected.
+	 * Begin an array. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	public void beginArray() throws IOException {
 		switch (state) {
@@ -159,14 +159,14 @@ public class JsonWriter implements JsonOutput {
 				writer.write('[');
 				break;
 			default:
-				throw new JsonException("Array begin not expected!");
+				throw new JsonIOException("Array begin not expected!");
 		}
 		lastStructures.set(++this.lastStructureIndex);
 		this.state = STATE_EXPECT_VALUE_NO_SEPARATOR;
 	}
 
 	/**
-	 * Begin an object. Throws {@link JsonException} if this is unexpected.
+	 * Begin an object. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	public void beginObject() throws IOException {
 		switch (state) {
@@ -182,14 +182,14 @@ public class JsonWriter implements JsonOutput {
 				writer.write('{');
 				break;
 			default:
-				throw new JsonException("Object begin not expected!");
+				throw new JsonIOException("Object begin not expected!");
 		}
 		lastStructures.clear(++this.lastStructureIndex);
 		this.state = STATE_EXPECT_NAME_NO_SEPARATOR;
 	}
 
 	/**
-	 * End an array or an object. Throws {@link JsonException} if this is unexpected.
+	 * End an array or an object. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	public void end() throws IOException {
 		switch (state) {
@@ -220,12 +220,12 @@ public class JsonWriter implements JsonOutput {
 					return;
 				}
 			default:
-				throw new JsonException("Array end not expected!");
+				throw new JsonIOException("Array end not expected!");
 		}
 	}
 
 	/**
-	 * Write a name. Throws {@link JsonException} if this is unexpected.
+	 * Write a name. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	public void name(@NotNull String name) throws IOException {
 		switch (state) {
@@ -238,26 +238,26 @@ public class JsonWriter implements JsonOutput {
 				this.state = STATE_EXPECT_VALUE_WITH_COLON;
 				return;
 			default:
-				throw new JsonException("Name not expected!");
+				throw new JsonIOException("Name not expected!");
 		}
 	}
 
 	/**
-	 * Write a boolean value. Throws {@link JsonException} if this is unexpected.
+	 * Write a boolean value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	public void valueBoolean(boolean value) throws IOException {
 		writeValueRaw(value ? "true" : "false");
 	}
 
 	/**
-	 * Write a integer number value. Throws {@link JsonException} if this is unexpected.
+	 * Write a integer number value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	public void valueNumber(long value) throws IOException {
 		writeValueRaw(Long.toString(value));
 	}
 
 	/**
-	 * Write a decimal number value. Throws {@link JsonException} if this is unexpected.
+	 * Write a decimal number value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	public void valueNumber(double value) throws IOException {
 		if (Double.isFinite(value)) {
@@ -268,35 +268,35 @@ public class JsonWriter implements JsonOutput {
 	}
 
 	/**
-	 * Write a big integer number value. Throws {@link JsonException} if this is unexpected.
+	 * Write a big integer number value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	public void valueNumber(@NotNull BigInteger value) throws IOException {
 		writeValueRaw(value.toString());
 	}
 
 	/**
-	 * Write a big decimal number value. Throws {@link JsonException} if this is unexpected.
+	 * Write a big decimal number value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	public void valueNumber(@NotNull BigDecimal value) throws IOException {
 		writeValueRaw(value.toString());
 	}
 
 	/**
-	 * Write a string value. Throws {@link JsonException} if this is unexpected.
+	 * Write a string value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	public void valueString(char value) throws IOException {
 		writeValueString(String.valueOf(value));
 	}
 
 	/**
-	 * Write a string value. Throws {@link JsonException} if this is unexpected.
+	 * Write a string value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	public void valueString(@NotNull String value) throws IOException {
 		writeValueString(value);
 	}
 
 	/**
-	 * Write a null value. Throws {@link JsonException} if this is unexpected.
+	 * Write a null value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	public void valueNull() throws IOException {
 		writeValueRaw("null");
@@ -310,7 +310,7 @@ public class JsonWriter implements JsonOutput {
 	private final @NotNull Map<@NotNull JsonElement, @NotNull JsonElement> recursionStack = new IdentityHashMap<>();
 
 	/**
-	 * Write a {@link JsonElement} value. Throws {@link JsonException} if this is unexpected.
+	 * Write a {@link JsonElement} value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	@Override
 	public void value(@NotNull JsonElement element) throws IOException {
@@ -333,12 +333,12 @@ public class JsonWriter implements JsonOutput {
 		} else if (element instanceof JsonObject) {
 			valueObject((JsonObject) element);
 		} else {
-			throw new JsonException("Unknown element!");
+			throw new JsonIOException("Unknown element!");
 		}
 	}
 
 	/**
-	 * Write a {@link JsonNumber} value. Throws {@link JsonException} if this is unexpected.
+	 * Write a {@link JsonNumber} value. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	private void valueNumber(@NotNull JsonNumber element) throws IOException {
 		final Number number = element.getValue();
@@ -356,11 +356,11 @@ public class JsonWriter implements JsonOutput {
 	}
 
 	/**
-	 * Write a {@link JsonArray}. Throws {@link JsonException} if this is unexpected.
+	 * Write a {@link JsonArray}. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	private void valueArray(@NotNull JsonArray array) throws IOException {
 		// check recursion
-		if (recursionStack.put(array, array) != null) throw new JsonException("Recursive structure detected!");
+		if (recursionStack.put(array, array) != null) throw new JsonIOException("Recursive structure detected!");
 		// write array
 		beginArray();
 		for (final JsonElement arrayElement : array) {
@@ -372,11 +372,11 @@ public class JsonWriter implements JsonOutput {
 	}
 
 	/**
-	 * Write a {@link JsonObject}. Throws {@link JsonException} if this is unexpected.
+	 * Write a {@link JsonObject}. Throws {@link JsonIOException} if this is unexpected.
 	 */
 	private void valueObject(@NotNull JsonObject object) throws IOException {
 		// check recursion
-		if (recursionStack.put(object, object) != null) throw new JsonException("Recursive structure detected!");
+		if (recursionStack.put(object, object) != null) throw new JsonIOException("Recursive structure detected!");
 		// write object
 		beginObject();
 		for (final Map.Entry<String, JsonElement> entry : object.entrySet()) {
@@ -429,7 +429,7 @@ public class JsonWriter implements JsonOutput {
 				}
 				break;
 			default:
-				throw new JsonException("Value not expected!");
+				throw new JsonIOException("Value not expected!");
 		}
 	}
 

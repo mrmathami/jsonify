@@ -6,7 +6,7 @@
 
 	<groupId>io.github.mrmathami</groupId>
 	<artifactId>jsonify</artifactId>
-	<version>20221216</version>
+	<version>20230113</version>
 
 	<name>jsonify</name>
 	<description>JSON reader/writer library.</description>
@@ -33,7 +33,7 @@
 		<dependency>
 			<groupId>org.jetbrains</groupId>
 			<artifactId>annotations</artifactId>
-			<version>23.1.0</version>
+			<version>24.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

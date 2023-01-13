@@ -17,20 +17,11 @@
 
 package io.github.mrmathami.jsonify.test;
 
-import io.github.mrmathami.jsonify.JsonArray;
-import io.github.mrmathami.jsonify.JsonElement;
-import io.github.mrmathami.jsonify.JsonException;
-import io.github.mrmathami.jsonify.JsonReader;
-import io.github.mrmathami.jsonify.JsonWriter;
+import io.github.mrmathami.jsonify.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public class JsonifyTest {
@@ -47,7 +38,7 @@ public class JsonifyTest {
 				final StringReader anotherReader = new StringReader(writer.toString());
 				final JsonElement anotherElement = JsonReader.read(anotherReader);
 				Assertions.assertEquals(element, anotherElement);
-			} catch (final JsonException e) {
+			} catch (final JsonIOException e) {
 				Assertions.fail(e);
 			}
 		}
