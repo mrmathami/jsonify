@@ -112,13 +112,11 @@ public class JsonReader implements JsonInput {
 		while (true) {
 			final int character = read();
 			switch (character) {
-				case '\t':
-				case '\n':
-				case '\r':
-				case ' ':
-					continue;
-				default:
+				case '\t', '\n', '\r', ' ' -> {
+				}
+				default -> {
 					return character;
+				}
 			}
 		}
 	}
@@ -221,8 +219,7 @@ public class JsonReader implements JsonInput {
 		ensureOpenAndValid();
 		try {
 			switch (state) {
-				case STATE_EXPECT_NAME:
-				case STATE_OBJECT_BEGIN_EXPECT_NAME_OR_OBJECT_END: {
+				case STATE_EXPECT_NAME, STATE_OBJECT_BEGIN_EXPECT_NAME_OR_OBJECT_END -> {
 					// parse a name
 					final int c = readNonWhitespace();
 					if (c == '\"') {
@@ -241,8 +238,7 @@ public class JsonReader implements JsonInput {
 					}
 					throw new JsonIOException("Unexpected character when parsing input JSON!");
 				}
-				case STATE_EXPECT_VALUE:
-				case STATE_ARRAY_BEGIN_EXPECT_VALUE_OR_ARRAY_END: {
+				case STATE_EXPECT_VALUE, STATE_ARRAY_BEGIN_EXPECT_VALUE_OR_ARRAY_END -> {
 					final int c = readNonWhitespace();
 					if (c == '\"') {
 						final String string = stringOrName();
@@ -292,16 +288,18 @@ public class JsonReader implements JsonInput {
 					}
 					throw new JsonIOException("Unexpected character when parsing input JSON!");
 				}
-				case STATE_ARRAY_END:
+				case STATE_ARRAY_END -> {
 					return JsonTokens.ARRAY_END;
-				case STATE_OBJECT_END:
+				}
+				case STATE_OBJECT_END -> {
 					return JsonTokens.OBJECT_END;
-				case STATE_EXPECT_DOCUMENT_END:
+				}
+				case STATE_EXPECT_DOCUMENT_END -> {
 					final int c = readNonWhitespace();
 					if (c < 0) return JsonTokens.EOF;
 					throw new JsonIOException("Unexpected character at the end of the document!");
-				default:
-					throw new AssertionError();
+				}
+				default -> throw new AssertionError();
 			}
 		} catch (IOException exception) {
 			this.state = STATE_ERROR;
@@ -317,27 +315,29 @@ public class JsonReader implements JsonInput {
 		if (lastStructureIndex >= 0) {
 			// the reader is inside an object or an array
 			final int c = readNonWhitespace();
-			if (c == ',') {
-				// not end of object/array yet
-				this.state = lastStructures.get(lastStructureIndex)
-						? STATE_EXPECT_VALUE // array
-						: STATE_EXPECT_NAME; // object
-			} else if (c == ']') {
-				// end of array. Checking the closing character...
-				if (lastStructures.get(lastStructureIndex)) {
-					this.state = STATE_ARRAY_END;
-				} else {
-					throw new JsonIOException("Invalid closing character for object!");
+			switch (c) {
+				case ',' ->
+					// not end of object/array yet
+						this.state = lastStructures.get(lastStructureIndex)
+								? STATE_EXPECT_VALUE // array
+								: STATE_EXPECT_NAME; // object
+				case ']' -> {
+					// end of array. Checking the closing character...
+					if (lastStructures.get(lastStructureIndex)) {
+						this.state = STATE_ARRAY_END;
+					} else {
+						throw new JsonIOException("Invalid closing character for object!");
+					}
 				}
-			} else if (c == '}') {
-				// end of object. Checking the closing character...
-				if (!lastStructures.get(lastStructureIndex)) {
-					this.state = STATE_OBJECT_END;
-				} else {
-					throw new JsonIOException("Invalid closing character for array!");
+				case '}' -> {
+					// end of object. Checking the closing character...
+					if (!lastStructures.get(lastStructureIndex)) {
+						this.state = STATE_OBJECT_END;
+					} else {
+						throw new JsonIOException("Invalid closing character for array!");
+					}
 				}
-			} else {
-				throw new JsonIOException("Unexpected character after a value!");
+				default -> throw new JsonIOException("Unexpected character after a value!");
 			}
 		} else {
 			// the reader is at the top level, expect an EOF

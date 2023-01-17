@@ -198,10 +198,7 @@ public final class JsonNumber extends Number implements JsonElement, JsonToken {
 
 	@Override
 	public boolean equals(@Nullable Object object) {
-		if (this == object) return true;
-		if (!(object instanceof JsonNumber)) return false;
-		final JsonNumber number = (JsonNumber) object;
-		return value.equals(number.value);
+		return this == object || object instanceof JsonNumber number && value.equals(number.value);
 	}
 
 	@Override
