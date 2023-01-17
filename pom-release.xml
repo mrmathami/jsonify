@@ -6,7 +6,7 @@
 
 	<groupId>io.github.mrmathami</groupId>
 	<artifactId>jsonify</artifactId>
-	<version>20230113</version>
+	<version>20230117</version>
 
 	<name>jsonify</name>
 	<description>JSON reader/writer library.</description>
