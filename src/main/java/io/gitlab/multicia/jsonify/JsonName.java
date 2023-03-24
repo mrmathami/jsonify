@@ -15,7 +15,30 @@
  * along with jsonify. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.mrmathami.jsonify;
+package io.gitlab.multicia.jsonify;
 
-public sealed interface JsonElement permits JsonKeyword, JsonString, JsonNumber, JsonArray, JsonObject {
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+public final class JsonName implements JsonToken {
+	private final @NotNull String value;
+
+	public JsonName(@NotNull String value) {
+		this.value = value;
+	}
+
+	@Override
+	public boolean equals(@Nullable Object object) {
+		return this == object || object instanceof JsonName && value.equals(object.toString());
+	}
+
+	@Override
+	public int hashCode() {
+		return value.hashCode();
+	}
+
+	@Override
+	public @NotNull String toString() {
+		return value;
+	}
 }

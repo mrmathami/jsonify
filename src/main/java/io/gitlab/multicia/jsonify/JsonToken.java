@@ -15,12 +15,7 @@
  * along with jsonify. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.mrmathami.jsonify;
+package io.gitlab.multicia.jsonify;
 
-public enum JsonTokens implements JsonToken {
-	EOF,
-	ARRAY_BEGIN,
-	ARRAY_END,
-	OBJECT_BEGIN,
-	OBJECT_END
+public sealed interface JsonToken permits JsonTokens, JsonName, JsonKeyword, JsonString, JsonNumber {
 }

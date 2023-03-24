@@ -15,35 +15,38 @@
  * along with jsonify. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.mrmathami.jsonify;
+package io.gitlab.multicia.jsonify;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class JsonKeyword implements JsonElement, JsonToken {
-	public static final @NotNull JsonKeyword TRUE = new JsonKeyword("true");
-	public static final @NotNull JsonKeyword FALSE = new JsonKeyword("false");
-	public static final @NotNull JsonKeyword NULL = new JsonKeyword("null");
+public final class JsonString implements JsonElement, JsonToken {
+	private final @NotNull String value;
 
-	private final @NotNull String string;
-
-	private JsonKeyword(@NotNull String string) {
-		this.string = string;
+	public JsonString(@NotNull String value) {
+		this.value = value;
 	}
 
-	public static @NotNull JsonKeyword of(@Nullable Boolean object) {
-		if (object == null) return NULL;
-		if (object == Boolean.TRUE) return TRUE;
-		if (object == Boolean.FALSE) return FALSE;
-		throw new AssertionError();
+	public JsonString(char value) {
+		this.value = String.valueOf(value);
 	}
 
-	public static @NotNull JsonKeyword of(boolean bool) {
-		return bool ? TRUE : FALSE;
+	@Override
+	public boolean equals(@Nullable Object object) {
+		return this == object || object instanceof JsonString && value.equals(object.toString());
+	}
+
+	@Override
+	public int hashCode() {
+		return value.hashCode();
 	}
 
 	@Override
 	public @NotNull String toString() {
-		return string;
+		return value;
+	}
+
+	public @Nullable Character toCharacter() {
+		return value.length() == 1 ? value.charAt(0) : null;
 	}
 }

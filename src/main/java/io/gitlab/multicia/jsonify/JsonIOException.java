@@ -15,30 +15,21 @@
  * along with jsonify. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.mrmathami.jsonify;
+package io.gitlab.multicia.jsonify;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public final class JsonName implements JsonToken {
-	private final @NotNull String value;
+import java.io.IOException;
 
-	public JsonName(@NotNull String value) {
-		this.value = value;
-	}
+/**
+ * Signals that an exception occurred while reading/writing a JSON document.
+ */
+public final class JsonIOException extends IOException {
+    public JsonIOException(@NotNull String message) {
+        super(message);
+    }
 
-	@Override
-	public boolean equals(@Nullable Object object) {
-		return this == object || object instanceof JsonName && value.equals(object.toString());
-	}
-
-	@Override
-	public int hashCode() {
-		return value.hashCode();
-	}
-
-	@Override
-	public @NotNull String toString() {
-		return value;
-	}
+    public JsonIOException(@NotNull String message, @NotNull Throwable cause) {
+        super(message, cause);
+    }
 }
