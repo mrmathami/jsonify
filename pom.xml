@@ -3,7 +3,7 @@
 		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>io.github.mrmathami</groupId>
+	<groupId>io.gitlab.multicia</groupId>
 	<artifactId>jsonify</artifactId>
 	<version>LATEST-SNAPSHOT</version>
 	<packaging>jar</packaging>
@@ -13,7 +13,7 @@
 		<dependency>
 			<groupId>org.jetbrains</groupId>
 			<artifactId>annotations</artifactId>
-			<version>24.0.0</version>
+			<version>24.0.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

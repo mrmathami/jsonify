@@ -1,0 +1,19 @@
+<mxfile host="app.diagrams.net" modified="2023-03-24T08:11:39.340Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0" etag="kzX-EXeh0_ag5XP1hXVz" version="21.1.0" type="device">
+  <diagram name="Page-1" id="80qITeza8NtsBA7JRFJL">
+    <mxGraphModel dx="153" dy="97" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="40" pageHeight="40" background="#F4F1DE" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="86tcZN14OSeoCzX2MDcZ-13" value="" style="group" parent="1" vertex="1" connectable="0">
+          <mxGeometry width="40" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="86tcZN14OSeoCzX2MDcZ-11" value="&lt;p style=&quot;line-height: 0%;&quot;&gt;&lt;/p&gt;&lt;div style=&quot;line-height: 10%; font-size: 18px;&quot;&gt;&lt;font style=&quot;font-size: 18px;&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Oleo+Script&quot; face=&quot;Oleo Script&quot; color=&quot;#ffb570&quot;&gt;&lt;font style=&quot;font-size: 18px;&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Great+Vibes&quot;&gt;&lt;span style=&quot;&quot;&gt;&lt;font style=&quot;font-size: 18px;&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Dancing+Script&quot;&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;i style=&quot;&quot;&gt;~&lt;/i&gt;&lt;/font&gt;&lt;/font&gt;&lt;/span&gt;&lt;/font&gt;&lt;/font&gt;&lt;font style=&quot;font-size: 18px;&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Oleo+Script&quot; face=&quot;Oleo Script&quot; color=&quot;#e07a5f&quot;&gt;&lt;font style=&quot;font-size: 18px;&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Great+Vibes&quot;&gt;&lt;span style=&quot;&quot;&gt;&lt;font style=&quot;font-size: 18px;&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Dancing+Script&quot;&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;i style=&quot;&quot;&gt;ify&lt;/i&gt;&lt;/font&gt;&lt;/font&gt;&lt;/span&gt;&lt;/font&gt;&lt;/font&gt;&lt;font style=&quot;font-size: 18px;&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Oleo+Script&quot; face=&quot;Oleo Script&quot; color=&quot;#e07a5f&quot;&gt;&lt;font style=&quot;font-size: 18px;&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Great+Vibes&quot;&gt;&lt;span style=&quot;&quot;&gt;&lt;font style=&quot;font-size: 18px;&quot; data-font-src=&quot;https://fonts.googleapis.com/css?family=Dancing+Script&quot;&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;i style=&quot;&quot;&gt;&lt;br style=&quot;&quot;&gt;&lt;/i&gt;&lt;/font&gt;&lt;/font&gt;&lt;/span&gt;&lt;/font&gt;&lt;/font&gt;&lt;/div&gt;&lt;p&gt;&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=bottom;rounded=0;spacingBottom=-3;labelBorderColor=none;shadow=0;spacingRight=2;" parent="86tcZN14OSeoCzX2MDcZ-13" vertex="1">
+          <mxGeometry y="10" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="86tcZN14OSeoCzX2MDcZ-12" value="&lt;div&gt;&lt;font color=&quot;#e07a5f&quot;&gt;&lt;b&gt;JSON&lt;/b&gt;&lt;/font&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=15;fontFamily=Courier New;spacingTop=-2;spacingBottom=0;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;strokeWidth=0;allowArrows=0;expand=0;backgroundOutline=0;container=0;noLabel=0;overflow=hidden;spacing=2;labelBorderColor=none;horizontal=1;" parent="86tcZN14OSeoCzX2MDcZ-13" vertex="1">
+          <mxGeometry width="40" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

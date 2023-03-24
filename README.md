@@ -47,7 +47,7 @@ If you want more control on the reader/writer, you can use an instance of `JsonR
 
 ## License
 
-LGPL v3 or any later version
+LGPL v3 or any later version.
 
 ## Found a bug?
 
