@@ -15,9 +15,9 @@
  * along with jsonify. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.mrmathami.jsonify.test;
+package io.gitlab.multicia.jsonify.test;
 
-import io.github.mrmathami.jsonify.JsonNumber;
+import io.gitlab.multicia.jsonify.JsonNumber;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

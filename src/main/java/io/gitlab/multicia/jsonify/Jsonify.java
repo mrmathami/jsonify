@@ -15,7 +15,7 @@
  * along with jsonify. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.mrmathami.jsonify;
+package io.gitlab.multicia.jsonify;
 
 import org.jetbrains.annotations.Nullable;
 

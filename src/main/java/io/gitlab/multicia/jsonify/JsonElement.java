@@ -15,7 +15,7 @@
  * along with jsonify. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.mrmathami.jsonify;
+package io.gitlab.multicia.jsonify;
 
-public sealed interface JsonToken permits JsonTokens, JsonName, JsonKeyword, JsonString, JsonNumber {
+public sealed interface JsonElement permits JsonKeyword, JsonString, JsonNumber, JsonArray, JsonObject {
 }
