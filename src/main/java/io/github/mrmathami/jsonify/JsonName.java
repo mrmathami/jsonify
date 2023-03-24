@@ -27,10 +27,6 @@ public final class JsonName implements JsonToken {
 		this.value = value;
 	}
 
-	public JsonName(char value) {
-		this.value = String.valueOf(value);
-	}
-
 	@Override
 	public boolean equals(@Nullable Object object) {
 		return this == object || object instanceof JsonName && value.equals(object.toString());

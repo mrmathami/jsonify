@@ -147,19 +147,11 @@ public class JsonWriter implements JsonOutput {
 	 */
 	public void beginArray() throws IOException {
 		switch (state) {
-			case STATE_CLOSED:
-				throw new IllegalStateException("Already closed!");
-			case STATE_EXPECT_VALUE_WITH_COLON:
-				writer.write(":[");
-				break;
-			case STATE_EXPECT_VALUE_WITH_COMMA:
-				writer.write(",[");
-				break;
-			case STATE_EXPECT_VALUE_NO_SEPARATOR:
-				writer.write('[');
-				break;
-			default:
-				throw new JsonIOException("Array begin not expected!");
+			case STATE_CLOSED -> throw new IllegalStateException("Already closed!");
+			case STATE_EXPECT_VALUE_WITH_COLON -> writer.write(":[");
+			case STATE_EXPECT_VALUE_WITH_COMMA -> writer.write(",[");
+			case STATE_EXPECT_VALUE_NO_SEPARATOR -> writer.write('[');
+			default -> throw new JsonIOException("Array begin not expected!");
 		}
 		lastStructures.set(++this.lastStructureIndex);
 		this.state = STATE_EXPECT_VALUE_NO_SEPARATOR;
@@ -170,19 +162,11 @@ public class JsonWriter implements JsonOutput {
 	 */
 	public void beginObject() throws IOException {
 		switch (state) {
-			case STATE_CLOSED:
-				throw new IllegalStateException("Already closed!");
-			case STATE_EXPECT_VALUE_WITH_COLON:
-				writer.write(":{");
-				break;
-			case STATE_EXPECT_VALUE_WITH_COMMA:
-				writer.write(",{");
-				break;
-			case STATE_EXPECT_VALUE_NO_SEPARATOR:
-				writer.write('{');
-				break;
-			default:
-				throw new JsonIOException("Object begin not expected!");
+			case STATE_CLOSED -> throw new IllegalStateException("Already closed!");
+			case STATE_EXPECT_VALUE_WITH_COLON -> writer.write(":{");
+			case STATE_EXPECT_VALUE_WITH_COMMA -> writer.write(",{");
+			case STATE_EXPECT_VALUE_NO_SEPARATOR -> writer.write('{');
+			default -> throw new JsonIOException("Object begin not expected!");
 		}
 		lastStructures.clear(++this.lastStructureIndex);
 		this.state = STATE_EXPECT_NAME_NO_SEPARATOR;
@@ -412,24 +396,20 @@ public class JsonWriter implements JsonOutput {
 	 */
 	private void writeValueSeparator() throws IOException {
 		switch (state) {
-			case STATE_CLOSED:
-				throw new IllegalStateException("Already closed!");
-			case STATE_EXPECT_VALUE_WITH_COLON:
+			case STATE_CLOSED -> throw new IllegalStateException("Already closed!");
+			case STATE_EXPECT_VALUE_WITH_COLON -> {
 				this.state = STATE_EXPECT_NAME_WITH_COMMA;
 				writer.write(':');
-				break;
-			case STATE_EXPECT_VALUE_WITH_COMMA:
-				writer.write(',');
-				break;
-			case STATE_EXPECT_VALUE_NO_SEPARATOR:
+			}
+			case STATE_EXPECT_VALUE_WITH_COMMA -> writer.write(',');
+			case STATE_EXPECT_VALUE_NO_SEPARATOR -> {
 				if (lastStructureIndex >= 0) {
 					this.state = STATE_EXPECT_VALUE_WITH_COMMA;
 				} else {
 					this.state = STATE_EXPECT_DOCUMENT_END;
 				}
-				break;
-			default:
-				throw new JsonIOException("Value not expected!");
+			}
+			default -> throw new JsonIOException("Value not expected!");
 		}
 	}
 
@@ -450,32 +430,18 @@ public class JsonWriter implements JsonOutput {
 					count = 0;
 				}
 				switch (c) {
-					case '"':
-						writer.write("\\\"");
-						break;
-					case '\\':
-						writer.write("\\\\");
-						break;
-					case '\r':
-						writer.write("\\r");
-						break;
-					case '\n':
-						writer.write("\\n");
-						break;
-					case '\t':
-						writer.write("\\t");
-						break;
-					case '\b':
-						writer.write("\\b");
-						break;
-					case '\f':
-						writer.write("\\f");
-						break;
-					default:
+					case '"' -> writer.write("\\\"");
+					case '\\' -> writer.write("\\\\");
+					case '\r' -> writer.write("\\r");
+					case '\n' -> writer.write("\\n");
+					case '\t' -> writer.write("\\t");
+					case '\b' -> writer.write("\\b");
+					case '\f' -> writer.write("\\f");
+					default -> {
 						writer.write("\\u00");
 						writer.write(c >= 0x10 ? '1' : '0');
 						writer.write(c + (c >= 10 ? 'A' - 10 : '0'));
-						break;
+					}
 				}
 			}
 		}
